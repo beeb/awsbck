@@ -10,6 +10,7 @@ edition = "2021"
 anyhow = "1"
 aws-config = "0.54"
 aws-sdk-s3 = "0.24"
+aws-smithy-http = "0.54"
 chrono = "0.4"
 clap = { version = "4", features = ["derive"] }
 cron = "0.12"
