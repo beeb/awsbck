@@ -1,3 +1,4 @@
+#![allow(unused)] // TODO: remove
 use std::ffi::OsStr;
 use std::io::{Seek, SeekFrom};
 use std::{collections::HashMap, fs::File, path::Path, time::SystemTime};
