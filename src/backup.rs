@@ -19,6 +19,7 @@ struct CompletionTracker {
     complete_up_to: u64,
     uploaded_blocks: HashMap<u64, u64>,
 }
+
 impl CompletionTracker {
     fn complete_block(&mut self, block_offset: u64, block_len: u64) {
         if block_offset == self.complete_up_to {
