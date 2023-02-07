@@ -17,13 +17,14 @@ fn main() -> Result<()> {
     let params = Cli::parse();
 
     let folder = params.folder.unwrap_or_else(|| PathBuf::from("/dockerbox"));
+    let folder_repr = folder
+        .canonicalize()
+        .with_context(|| anyhow!("Could not resolve path {}", folder.to_string_lossy()))?;
+    let folder_repr = folder_repr.to_string_lossy();
     if !folder.is_dir() {
-        return Err(anyhow!(
-            "The folder '{}' does not exist",
-            folder.to_string_lossy()
-        ));
+        return Err(anyhow!("'{folder_repr}' is not a folder or does not exist"));
     }
-    println!("Will backup '{}'", folder.canonicalize()?.to_string_lossy());
+    println!("Will backup '{folder_repr}'");
 
     match params.schedule {
         Some(schedule) => {
