@@ -1,8 +1,10 @@
 use std::{env, path::PathBuf};
 
 use anyhow::{anyhow, Context, Result};
+use aws_config::meta::region::RegionProviderChain;
+use aws_sdk_s3::Region;
 use clap::{command, Parser};
-use job_scheduler_ng::Schedule;
+use cron::Schedule;
 
 use crate::prelude::*;
 
@@ -11,7 +13,7 @@ use crate::prelude::*;
 struct Cli {
     /// Path to the folder to backup
     ///
-    /// If not specified, defaults to "/dockerbox"
+    /// If not specified, defaults to "/dockerbck"
     #[arg(value_hint = clap::ValueHint::DirPath)]
     folder: Option<PathBuf>,
 
@@ -21,9 +23,21 @@ struct Cli {
     #[arg(short, long, value_name = "CRON")]
     schedule: Option<String>,
 
-    /// A Dropbox access token
+    /// The AWS S3 region
+    #[arg(short = 'r', long = "region", value_name = "REGION")]
+    aws_region: Option<String>,
+
+    /// The AWS S3 bucket name
+    #[arg(short = 'b', long = "bucket", value_name = "BUCKET")]
+    aws_bucket: Option<String>,
+
+    /// The AWS S3 access key ID
+    #[arg(short = 'i', long = "id", value_name = "KEY_ID")]
+    aws_key_id: Option<String>,
+
+    /// The AWS S3 secret access key
     #[arg(short = 't', long = "token", value_name = "KEY")]
-    dropbox_token: Option<String>,
+    aws_key: Option<String>,
 }
 
 /// Runtime parameters, parsed and ready to be used
@@ -32,26 +46,37 @@ pub struct Params {
     pub folder: PathBuf,
     /// An optional parsed cron expression
     pub schedule: Option<Schedule>,
-    /// A Dropbox access token
-    pub dropbox_token: String,
+    /// The AWS S3 region
+    pub aws_region: RegionProviderChain,
+    /// The AWS S3 bucket name
+    pub aws_bucket: String,
+    /// The AWS S3 access key ID
+    pub aws_key_id: String,
+    /// The AWS S3 access key
+    pub aws_key: String,
 }
 
 /// Parse the command-line arguments and environment variables into runtime params
-pub fn parse_config() -> Result<Params> {
+pub async fn parse_config() -> Result<Params> {
     let mut params = Cli::parse();
 
     params.folder = params
         .folder
-        .or_else(|| env::var("DOCKERBOX_FOLDER").ok().map(PathBuf::from))
+        .or_else(|| env::var("DOCKERBCK_FOLDER").ok().map(PathBuf::from))
         .or_else(|| Some(PathBuf::from("/dockerbox")));
 
     params.schedule = params
         .schedule
-        .or_else(|| env::var("DOCKERBOX_SCHEDULE").ok());
+        .or_else(|| env::var("DOCKERBCK_SCHEDULE").ok());
 
-    params.dropbox_token = params
-        .dropbox_token
-        .or_else(|| env::var("DOCKERBOX_TOKEN").ok());
+    params.aws_region = params.aws_region.or_else(|| env::var("AWS_REGION").ok());
+    params.aws_bucket = params.aws_bucket.or_else(|| env::var("AWS_BUCKET").ok());
+    params.aws_key_id = params
+        .aws_key_id
+        .or_else(|| env::var("AWS_ACCESS_KEY_ID").ok());
+    params.aws_key = params
+        .aws_key
+        .or_else(|| env::var("AWS_SECRET_ACCESS_KEY").ok());
 
     let folder = params.folder.or_panic(); // Ok to unwrap due to default value
     let folder = folder
@@ -69,13 +94,26 @@ pub fn parse_config() -> Result<Params> {
         None => None,
     };
 
-    let Some(dropbox_token) = params.dropbox_token else {
-        return Err(anyhow!("No Dropbox token was provided"));
+    let aws_region = RegionProviderChain::first_try(params.aws_region.map(Region::new))
+        .or_default_provider()
+        .or_else(Region::new("us-east-1"));
+    println!("Using AWS region: {}", aws_region.region().await.or_panic());
+    let Some(aws_bucket) = params.aws_bucket else {
+        return Err(anyhow!("No AWS bucket name was provided"));
+    };
+    let Some(aws_key_id) = params.aws_key_id else {
+        return Err(anyhow!("No AWS key ID was provided"));
+    };
+    let Some(aws_key) = params.aws_key else {
+        return Err(anyhow!("No AWS secret key was provided"));
     };
 
     Ok(Params {
         folder,
         schedule,
-        dropbox_token,
+        aws_region,
+        aws_bucket,
+        aws_key_id,
+        aws_key,
     })
 }
