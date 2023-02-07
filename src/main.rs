@@ -10,10 +10,10 @@ use dotenvy::dotenv;
 use job_scheduler_ng::{Job, JobScheduler};
 
 use backup::backup;
-use cli::parse_config;
+use config::parse_config;
 
 mod backup;
-mod cli;
+mod config;
 mod prelude;
 
 fn main() -> Result<()> {
