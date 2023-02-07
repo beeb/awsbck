@@ -20,6 +20,10 @@ struct Cli {
     /// If not specified, the backup will only run once
     #[arg(short, long, value_name = "CRON")]
     schedule: Option<String>,
+
+    /// A Dropbox access token
+    #[arg(short = 't', long = "token", value_name = "KEY")]
+    dropbox_token: Option<String>,
 }
 
 /// Runtime parameters, parsed and ready to be used
@@ -28,6 +32,8 @@ pub struct Params {
     pub folder: PathBuf,
     /// An optional parsed cron expression
     pub schedule: Option<Schedule>,
+    /// A Dropbox access token
+    pub dropbox_token: String,
 }
 
 /// Parse the command-line arguments and environment variables into runtime params
@@ -42,6 +48,10 @@ pub fn parse_config() -> Result<Params> {
     params.schedule = params
         .schedule
         .or_else(|| env::var("DOCKERBOX_SCHEDULE").ok());
+
+    params.dropbox_token = params
+        .dropbox_token
+        .or_else(|| env::var("DOCKERBOX_TOKEN").ok());
 
     let folder = params.folder.or_panic(); // Ok to unwrap due to default value
     let folder = folder
@@ -59,5 +69,13 @@ pub fn parse_config() -> Result<Params> {
         None => None,
     };
 
-    Ok(Params { folder, schedule })
+    let Some(dropbox_token) = params.dropbox_token else {
+        return Err(anyhow!("No Dropbox token was provided"));
+    };
+
+    Ok(Params {
+        folder,
+        schedule,
+        dropbox_token,
+    })
 }
