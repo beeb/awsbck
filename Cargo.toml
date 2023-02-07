@@ -9,10 +9,16 @@ edition = "2021"
 [dependencies]
 anyhow = "1"
 chrono = "0.4"
-clap = {version = "4", features = ["derive"]}
+clap = { version = "4", features = ["derive"] }
 dotenvy = "0.15"
-dropbox-sdk = { version = "0.15", default-features = false, features = ["dbx_files", "default_client"] }
+dropbox-sdk = { version = "0.15", default-features = false, features = [
+    "dbx_files",
+    "default_client",
+] }
 flate2 = "1"
 job_scheduler_ng = "2"
 tar = "0.4"
 tempfile = "3"
+
+[dev-dependencies]
+ctor = "0.1"

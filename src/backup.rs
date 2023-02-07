@@ -3,6 +3,7 @@ use std::ffi::OsStr;
 use std::{collections::HashMap, fs::File, path::Path, time::SystemTime};
 
 use anyhow::{anyhow, Context, Result};
+use dropbox_sdk::oauth2::Authorization;
 use dropbox_sdk::{default_client::UserAuthDefaultClient, files};
 use flate2::write::GzEncoder;
 use flate2::Compression;
@@ -14,14 +15,16 @@ const BLOCK_SIZE: usize = 4 * 1024 * 1024;
 ///
 /// `folder` is the path to the folder to backup, and `token` is the Dropbox generated access token.
 pub fn backup(folder: &Path, token: impl Into<String>) -> Result<()> {
-    // let token: String = token.into();
+    let token: String = token.into();
     let folder_name = folder
         .file_name()
         .map(|f| f.to_string_lossy().to_string())
         .unwrap_or("volume".to_string());
     let (archive, size, mtime) =
         compress_folder(folder).with_context(|| anyhow!("compression failed"))?;
-    println!("The archive weighs {size} bytes");
+    println!("Archive size: {size} bytes");
+    let auth = Authorization::from_access_token(token);
+    let client = UserAuthDefaultClient::new(auth);
     Ok(())
 }
 
@@ -129,4 +132,104 @@ fn iso8601(t: SystemTime) -> Result<String> {
             .format("%Y-%m-%dT%H:%M:%SZ")
             .to_string(),
     )
+}
+
+#[allow(clippy::unwrap_used)]
+#[cfg(test)]
+mod test {
+    use std::collections::VecDeque;
+
+    use dotenvy::dotenv;
+    use dropbox_sdk::UserAuthClient;
+
+    use super::*;
+
+    #[ctor::ctor]
+    fn init() {
+        dotenv().ok();
+    }
+
+    #[test]
+    fn test_token() {
+        let token = std::env::var("DOCKERBOX_TOKEN").unwrap();
+        let auth = Authorization::from_access_token(token);
+        let client = UserAuthDefaultClient::new(auth);
+        let iter = match files::list_folder(&client, &files::ListFolderArg::new(String::new())) {
+            Ok(Ok(result)) => {
+                let cursor = if result.has_more {
+                    Some(result.cursor)
+                } else {
+                    None
+                };
+
+                Ok(Ok(DirectoryIterator {
+                    client: &client,
+                    cursor,
+                    buffer: result.entries.into(),
+                }))
+            }
+            Ok(Err(err)) => Ok(Err(err)),
+            Err(err) => Err(err),
+        };
+        match iter {
+            Ok(Ok(iter)) => {
+                for entry_res in iter {
+                    match entry_res {
+                        Ok(Ok(files::Metadata::Folder(entry))) => {
+                            println!("Folder: {}", entry.path_display.unwrap_or(entry.name));
+                        }
+                        Ok(Ok(files::Metadata::File(entry))) => {
+                            println!("File: {}", entry.path_display.unwrap_or(entry.name));
+                        }
+                        Ok(Ok(files::Metadata::Deleted(entry))) => {
+                            eprintln!("unexpected deleted entry: {entry:?}");
+                        }
+                        Ok(Err(e)) => {
+                            eprintln!("Error from files/list_folder_continue: {e}");
+                            break;
+                        }
+                        Err(e) => {
+                            eprintln!("API request error: {e}");
+                            break;
+                        }
+                    }
+                }
+            }
+            Ok(Err(err)) => eprintln!("API error: {err:?}"),
+            Err(err) => eprintln!("API error: {err:?}"),
+        }
+    }
+
+    struct DirectoryIterator<'a, T: UserAuthClient> {
+        client: &'a T,
+        buffer: VecDeque<files::Metadata>,
+        cursor: Option<String>,
+    }
+
+    impl<'a, T: UserAuthClient> Iterator for DirectoryIterator<'a, T> {
+        type Item = dropbox_sdk::Result<Result<files::Metadata, files::ListFolderContinueError>>;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            if let Some(entry) = self.buffer.pop_front() {
+                Some(Ok(Ok(entry)))
+            } else if let Some(cursor) = self.cursor.take() {
+                match files::list_folder_continue(
+                    self.client,
+                    &files::ListFolderContinueArg::new(cursor),
+                ) {
+                    Ok(Ok(result)) => {
+                        self.buffer.extend(result.entries.into_iter());
+                        if result.has_more {
+                            self.cursor = Some(result.cursor);
+                        }
+                        self.buffer.pop_front().map(|entry| Ok(Ok(entry)))
+                    }
+                    Ok(Err(e)) => Some(Ok(Err(e))),
+                    Err(e) => Some(Err(e)),
+                }
+            } else {
+                None
+            }
+        }
+    }
 }
