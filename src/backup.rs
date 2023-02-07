@@ -128,5 +128,6 @@ async fn upload_file(archive_name: impl Into<String>, params: &Params) -> Result
         .upload_id(upload_id)
         .send()
         .await?;
+    tokio::fs::remove_file(archive_name).await?;
     Ok(())
 }
