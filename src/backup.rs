@@ -25,7 +25,7 @@ pub fn backup(folder: &Path, token: impl Into<String>) -> Result<()> {
         "backup_{folder_name}_{}",
         Utc::now().naive_utc().format("%Y-%m-%dT%H:%M:%S")
     );
-    let (tar_gz, size) = compress_folder(folder)?;
+    let (tar_gz, size) = compress_folder(folder).with_context(|| anyhow!("compression failed"))?;
     println!("The archive weighs {size} bytes");
     Ok(())
 }
