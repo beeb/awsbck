@@ -29,8 +29,8 @@ pub fn backup(folder: &Path, token: impl Into<String>) -> Result<()> {
     let mut tar = tar::Builder::new(enc);
     tar.append_dir_all(".", folder)?;
     let res = tar.into_inner()?;
-    let mut tar_gz = res.finish()?;
-    let size = tar_gz.seek(SeekFrom::End(0))?;
+    let tar_gz = res.finish()?;
+    let size = tar_gz.metadata()?.len();
     println!("The archive weighs {size} bytes");
     Ok(())
 }
