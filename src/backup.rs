@@ -25,6 +25,12 @@ pub fn backup(folder: &Path, token: impl Into<String>) -> Result<()> {
         "backup_{folder_name}_{}",
         Utc::now().naive_utc().format("%Y-%m-%dT%H:%M:%S")
     );
+    let (tar_gz, size) = compress_folder(folder)?;
+    println!("The archive weighs {size} bytes");
+    Ok(())
+}
+
+fn compress_folder(folder: &Path) -> Result<(File, u64)> {
     let tar_gz: File = tempfile::tempfile()?;
     let enc = GzEncoder::new(tar_gz, Compression::default());
     let mut tar = tar::Builder::new(enc);
@@ -32,8 +38,7 @@ pub fn backup(folder: &Path, token: impl Into<String>) -> Result<()> {
     let res = tar.into_inner()?;
     let tar_gz = res.finish()?;
     let size = tar_gz.metadata()?.len();
-    println!("The archive weighs {size} bytes");
-    Ok(())
+    Ok((tar_gz, size))
 }
 
 #[derive(Default)]
