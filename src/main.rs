@@ -1,35 +1,32 @@
-use std::{path::PathBuf, time::Duration};
+//! Utility to backup a docker volume (or any folder) to Dropbox, once or periodically.
+#![warn(missing_docs)]
+#![warn(clippy::unwrap_used)]
+#![warn(clippy::expect_used)]
+
+use std::time::Duration;
 
 use anyhow::{anyhow, Context, Result};
-use clap::Parser;
 use dotenvy::dotenv;
 use job_scheduler_ng::{Job, JobScheduler};
 
 use backup::backup;
-use cli::Cli;
+use cli::parse_config;
 
 mod backup;
 mod cli;
+mod prelude;
 
 fn main() -> Result<()> {
     dotenv().ok();
 
-    let params = Cli::parse();
+    let params = parse_config()?;
 
-    let folder = params.folder.unwrap_or_else(|| PathBuf::from("/dockerbox"));
-    let folder_repr = folder
-        .canonicalize()
-        .with_context(|| anyhow!("Could not resolve path {}", folder.to_string_lossy()))?;
-    let folder_repr = folder_repr.to_string_lossy();
-    if !folder.is_dir() {
-        return Err(anyhow!("'{folder_repr}' is not a folder or does not exist"));
-    }
-    println!("Will backup '{folder_repr}'");
+    println!("Will backup '{}'", params.folder.to_string_lossy());
 
     match params.schedule {
         Some(schedule) => {
             let mut sched = JobScheduler::new();
-            sched.add(Job::new(schedule.parse()?, || match backup() {
+            sched.add(Job::new(schedule, || match backup() {
                 Ok(_) => println!("Backup succeeded"),
                 Err(e) => eprintln!("Backup error: {e:#?}"),
             }));
