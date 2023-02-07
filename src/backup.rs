@@ -1,10 +1,8 @@
 #![allow(unused)] // TODO: remove
 use std::ffi::OsStr;
-use std::io::{Seek, SeekFrom};
 use std::{collections::HashMap, fs::File, path::Path, time::SystemTime};
 
 use anyhow::{anyhow, Context, Result};
-use chrono::Utc;
 use dropbox_sdk::{default_client::UserAuthDefaultClient, files};
 use flate2::write::GzEncoder;
 use flate2::Compression;
@@ -21,10 +19,6 @@ pub fn backup(folder: &Path, token: impl Into<String>) -> Result<()> {
         .file_name()
         .map(|f| f.to_string_lossy().to_string())
         .unwrap_or("volume".to_string());
-    /* let filename = format!(
-        "backup_{folder_name}_{}",
-        Utc::now().naive_utc().format("%Y%m%dT%H%M%S")
-    ); */
     let (archive, size, mtime) =
         compress_folder(folder).with_context(|| anyhow!("compression failed"))?;
     println!("The archive weighs {size} bytes");
