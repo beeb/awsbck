@@ -1,7 +1,12 @@
+use std::ffi::OsStr;
+use std::io::{Seek, SeekFrom};
 use std::{collections::HashMap, fs::File, path::Path, time::SystemTime};
 
 use anyhow::{anyhow, Context, Result};
+use chrono::Utc;
 use dropbox_sdk::{default_client::UserAuthDefaultClient, files};
+use flate2::write::GzEncoder;
+use flate2::Compression;
 
 /// The size of a block. This is a Dropbox constant, not adjustable.
 const BLOCK_SIZE: usize = 4 * 1024 * 1024;
@@ -10,7 +15,23 @@ const BLOCK_SIZE: usize = 4 * 1024 * 1024;
 ///
 /// `folder` is the path to the folder to backup, and `token` is the Dropbox generated access token.
 pub fn backup(folder: &Path, token: impl Into<String>) -> Result<()> {
-    let token: String = token.into();
+    // let token: String = token.into();
+    let folder_name = folder
+        .file_name()
+        .map(|f| f.to_string_lossy().to_string())
+        .unwrap_or("volume".to_string());
+    let filename = format!(
+        "backup_{folder_name}_{}",
+        Utc::now().naive_utc().format("%Y-%m-%dT%H:%M:%S")
+    );
+    let tar_gz: File = tempfile::tempfile()?;
+    let enc = GzEncoder::new(tar_gz, Compression::default());
+    let mut tar = tar::Builder::new(enc);
+    tar.append_dir_all(".", folder)?;
+    let res = tar.into_inner()?;
+    let mut tar_gz = res.finish()?;
+    let size = tar_gz.seek(SeekFrom::End(0))?;
+    println!("The archive weighs {size} bytes");
     Ok(())
 }
 
