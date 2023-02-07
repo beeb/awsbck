@@ -26,9 +26,11 @@ fn main() -> Result<()> {
     match params.schedule {
         Some(schedule) => {
             let mut sched = JobScheduler::new();
-            sched.add(Job::new(schedule, || match backup() {
-                Ok(_) => println!("Backup succeeded"),
-                Err(e) => eprintln!("Backup error: {e:#?}"),
+            sched.add(Job::new(schedule, || {
+                match backup(&params.folder, &params.dropbox_token) {
+                    Ok(_) => println!("Backup succeeded"),
+                    Err(e) => eprintln!("Backup error: {e:#?}"),
+                }
             }));
             loop {
                 sched.tick();
@@ -36,7 +38,8 @@ fn main() -> Result<()> {
             }
         }
         None => {
-            backup().with_context(|| anyhow!("Backup error"))?;
+            backup(&params.folder, &params.dropbox_token)
+                .with_context(|| anyhow!("Backup error"))?;
             println!("Backup succeeded");
         }
     }

@@ -11,5 +11,5 @@ anyhow = "1"
 chrono = "0.4"
 clap = {version = "4", features = ["derive"]}
 dotenvy = "0.15"
-dropbox-sdk = { version = "0.15", default-features = false, features = ["dbx_files"] }
+dropbox-sdk = { version = "0.15", default-features = false, features = ["dbx_files", "default_client"] }
 job_scheduler_ng = "2"
