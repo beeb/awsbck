@@ -6,7 +6,8 @@ This utility lets you compress a folder and upload it to a AWS S3 bucket, once o
 
 ## Disclaimer
 
-This software is in early alpha. It is not intended for production use yet. It has not been thouroughly tested yet.
+This software is in early alpha. It is not intended for production use yet. It has not been thoroughly tested yet.
+The CLI options will certainly change.
 
 ## Usage
 
