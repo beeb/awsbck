@@ -1,6 +1,6 @@
 [package]
 name = "awsbck"
-version = "0.1.0"
+version = "0.2.0"
 description = "Utility to backup a folder to AWS S3, once or periodically."
 authors = ["Valentin Bersier <vbersier@gmail.com>"]
 repository = "https://github.com/beeb/awsbck-rs"
