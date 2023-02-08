@@ -4,6 +4,7 @@ use anyhow::{anyhow, Context, Result};
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::Region;
 use clap::{command, Parser};
+use log::*;
 
 use crate::prelude::*;
 
@@ -85,7 +86,7 @@ pub async fn parse_config() -> Result<Params> {
     let aws_region = RegionProviderChain::first_try(params.aws_region.map(Region::new))
         .or_default_provider()
         .or_else(Region::new("us-east-1"));
-    println!("Using AWS region: {}", aws_region.region().await.or_panic());
+    info!("Using AWS region: {}", aws_region.region().await.or_panic());
     let Some(aws_bucket) = params.aws_bucket else {
         return Err(anyhow!("No AWS bucket name was provided"));
     };
