@@ -9,14 +9,12 @@ WORKDIR /awsbck
 COPY ./${TARGETOS}_${TARGETARCH}/awsbck .
 RUN chmod +x awsbck
 
-FROM gcr.io/distroless/static-debian11:nonroot
+FROM gcr.io/distroless/static-debian11
 
 WORKDIR /awsbck
 
 # Copy the binary with correct permissions
 COPY --from=builder /awsbck/awsbck .
-
-USER nonroot:nonroot
 
 # We use entrypoint to allow passing arguments to the binary using `CMD`
 ENTRYPOINT ["/awsbck/awsbck"]
