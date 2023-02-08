@@ -12,13 +12,13 @@ use crate::prelude::*;
 #[command(version, about, long_about = None)]
 struct Cli {
     /// Path to the folder to backup
-    #[arg(value_hint = clap::ValueHint::DirPath, env = "DOCKERBCK_FOLDER")]
+    #[arg(value_hint = clap::ValueHint::DirPath, env = "AWSBCK_FOLDER")]
     folder: Option<PathBuf>,
 
     /// Specify a cron expression to run the backup periodically
     ///
     /// If not specified, the backup will only run once
-    #[arg(short, long, value_name = "CRON", env = "DOCKERBCK_SCHEDULE")]
+    #[arg(short, long, value_name = "CRON", env = "AWSBCK_SCHEDULE")]
     schedule: Option<String>,
 
     /// The AWS S3 region

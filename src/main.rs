@@ -1,4 +1,4 @@
-//! Utility to backup a docker volume (or any folder) to AWS S3, once or periodically.
+//! Utility to backup a folder to AWS S3, once or periodically.
 #![warn(missing_docs)]
 #![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]

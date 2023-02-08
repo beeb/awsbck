@@ -1,10 +1,8 @@
 [package]
-name = "dockerbck"
+name = "awsbck"
 version = "0.1.0"
-description = "Utility to backup a docker volume (or any folder) to AWS S3, once or periodically."
+description = "Utility to backup a folder to AWS S3, once or periodically."
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 anyhow = "1"

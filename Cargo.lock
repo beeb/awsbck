@@ -426,6 +426,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "awsbck"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "aws-config",
+ "aws-sdk-s3",
+ "aws-smithy-http",
+ "chrono",
+ "clap",
+ "cron",
+ "ctor",
+ "dotenvy",
+ "flate2",
+ "tar",
+ "tempfile",
+ "tokio",
+ "tokio-cron-scheduler",
+]
+
+[[package]]
 name = "base64"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -684,26 +704,6 @@ dependencies = [
  "block-buffer",
  "crypto-common",
  "subtle",
-]
-
-[[package]]
-name = "dockerbck"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "aws-config",
- "aws-sdk-s3",
- "aws-smithy-http",
- "chrono",
- "clap",
- "cron",
- "ctor",
- "dotenvy",
- "flate2",
- "tar",
- "tempfile",
- "tokio",
- "tokio-cron-scheduler",
 ]
 
 [[package]]

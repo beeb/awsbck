@@ -29,7 +29,7 @@ pub async fn backup(params: &Params) -> Result<()> {
 }
 
 fn compress_folder(folder: &Path) -> Result<String> {
-    let filename = "dockerbck.tar.gz";
+    let filename = ".awsbck.tar.gz";
     let tar_gz: File = File::create(filename)?;
     let enc = GzEncoder::new(tar_gz, Compression::default());
     let mut tar = tar::Builder::new(enc);
