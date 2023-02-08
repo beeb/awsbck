@@ -30,7 +30,7 @@ async fn main() -> Result<()> {
 
     let params = Arc::new(parse_config().await?);
 
-    info!("Will backup '{}'", params.folder.to_string_lossy());
+    info!("Will backup \"{}\"", params.folder.to_string_lossy());
 
     match params.interval {
         Some(interval) => {
