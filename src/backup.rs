@@ -1,6 +1,7 @@
 //#![allow(unused)]
 use std::env;
 
+use std::path::PathBuf;
 use std::{fs::File, path::Path};
 
 use anyhow::{anyhow, Context, Result};
@@ -11,6 +12,8 @@ use aws_sdk_s3::{
 use aws_smithy_http::byte_stream::Length;
 use flate2::write::GzEncoder;
 use flate2::Compression;
+use temp_dir::TempDir;
+use uuid::Uuid;
 
 use crate::config::Params;
 
@@ -20,33 +23,34 @@ const MAX_CHUNKS: u64 = 10000;
 
 /// Perform a backup of the folder, uploading it to Dropbox once complete.
 pub async fn backup(params: &Params) -> Result<()> {
-    let archive_name =
+    let (archive_path, temp_dir) =
         compress_folder(&params.folder).with_context(|| anyhow!("compression failed"))?;
-    upload_file(archive_name, params)
+    upload_file(archive_path, temp_dir, params)
         .await
         .with_context(|| anyhow!("upload failed"))?;
     Ok(())
 }
 
-fn compress_folder(folder: &Path) -> Result<String> {
-    let filename = ".awsbck.tar.gz";
-    let tar_gz: File = File::create(filename)?;
+fn compress_folder(folder: &Path) -> Result<(PathBuf, TempDir)> {
+    let dir = TempDir::new()?;
+    let filename = format!("{}.tar.gz", Uuid::new_v4());
+    let file_path = dir.child(filename);
+    let tar_gz: File = File::create(&file_path)?;
     let enc = GzEncoder::new(tar_gz, Compression::default());
     let mut tar = tar::Builder::new(enc);
     tar.append_dir_all(".", folder)?;
     let res = tar.into_inner()?;
     res.finish()?;
-    Ok(filename.to_string())
+    Ok((file_path, dir))
 }
 
-fn get_file_size(archive_name: impl Into<String>) -> Result<u64> {
-    let file = File::open(archive_name.into())?;
+fn get_file_size(archive_path: &PathBuf) -> Result<u64> {
+    let file = File::open(archive_path)?;
     let metadata = file.metadata()?;
     Ok(metadata.len())
 }
 
-async fn upload_file(archive_name: impl Into<String>, params: &Params) -> Result<()> {
-    let archive_name = archive_name.into();
+async fn upload_file(archive_path: PathBuf, _temp_dir: TempDir, params: &Params) -> Result<()> {
     env::set_var("AWS_ACCESS_KEY_ID", &params.aws_key_id);
     env::set_var("AWS_SECRET_ACCESS_KEY", &params.aws_key);
     let shared_config = aws_config::from_env()
@@ -71,7 +75,7 @@ async fn upload_file(archive_name: impl Into<String>, params: &Params) -> Result
     let upload_id = multipart_upload_res
         .upload_id()
         .ok_or_else(|| anyhow!("upload_id not found"))?;
-    let file_size = get_file_size(&archive_name)?;
+    let file_size = get_file_size(&archive_path)?;
     let mut chunk_count = (file_size / CHUNK_SIZE) + 1;
     let mut size_of_last_chunk = file_size % CHUNK_SIZE;
     if size_of_last_chunk == 0 {
@@ -94,7 +98,7 @@ async fn upload_file(archive_name: impl Into<String>, params: &Params) -> Result
             _ => CHUNK_SIZE,
         };
         let stream = ByteStream::read_from()
-            .path(&archive_name)
+            .path(&archive_path)
             .offset(chunk_index * CHUNK_SIZE)
             .length(Length::Exact(this_chunk))
             .build()
@@ -128,6 +132,5 @@ async fn upload_file(archive_name: impl Into<String>, params: &Params) -> Result
         .upload_id(upload_id)
         .send()
         .await?;
-    tokio::fs::remove_file(archive_name).await?;
     Ok(())
 }

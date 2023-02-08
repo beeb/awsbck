@@ -30,10 +30,12 @@ async fn main() -> Result<()> {
 
     let params = Arc::new(parse_config().await?);
 
-    info!("Will backup '{}'", params.folder.to_string_lossy());
-
     match params.interval {
         Some(interval) => {
+            info!(
+                "Will backup \"{}\" every {interval} seconds",
+                params.folder.to_string_lossy()
+            );
             let task = task::spawn(async move {
                 let shared_params = Arc::clone(&params);
                 let mut interval = time::interval(Duration::from_secs(interval));
@@ -52,6 +54,7 @@ async fn main() -> Result<()> {
             task.await?;
         }
         None => {
+            info!("Backuping \"{}\" once", params.folder.to_string_lossy());
             backup(&params)
                 .await
                 .with_context(|| anyhow!("Backup error"))?;
