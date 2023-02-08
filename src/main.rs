@@ -3,10 +3,11 @@
 #![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]
 
-use std::{sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 
 use anyhow::{anyhow, Context, Result};
 use dotenvy::dotenv;
+use log::*;
 use tokio::{task, time};
 
 use backup::backup;
@@ -19,10 +20,17 @@ mod prelude;
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
+    if env::var("RUST_LOG").is_err() {
+        env::set_var(
+            "RUST_LOG",
+            "awsbck=info,aws_config=warn,aws_credential_types=warn,tracing=warn",
+        );
+    };
+    env_logger::init();
 
     let params = Arc::new(parse_config().await?);
 
-    println!("Will backup '{}'", params.folder.to_string_lossy());
+    info!("Will backup '{}'", params.folder.to_string_lossy());
 
     match params.interval {
         Some(interval) => {
@@ -33,10 +41,10 @@ async fn main() -> Result<()> {
                     interval.tick().await;
                     match backup(&shared_params).await {
                         Ok(_) => {
-                            println!("Backup succeeded");
+                            info!("Backup succeeded");
                         }
                         Err(e) => {
-                            eprintln!("Backup error: {e:#}");
+                            error!("Backup error: {e:#}");
                         }
                     }
                 }
@@ -47,7 +55,7 @@ async fn main() -> Result<()> {
             backup(&params)
                 .await
                 .with_context(|| anyhow!("Backup error"))?;
-            println!("Backup succeeded");
+            info!("Backup succeeded");
         }
     }
     Ok(())
