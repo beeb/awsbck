@@ -27,7 +27,10 @@ pub async fn upload_file(archive_path: PathBuf, _temp_dir: TempDir, params: &Par
     let filename = params
         .filename
         .clone()
-        .map(|f| format!("{f}.tar.gz"))
+        .map(|f| match f {
+            f if !f.ends_with(".tar.gz") => format!("{f}.tar.gz"),
+            f => f,
+        })
         .unwrap_or_else(|| {
             format!(
                 "awsbck_{}.tar.gz",
