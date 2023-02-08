@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - ci-cd
   pull_request:
   workflow_dispatch:
 
@@ -22,6 +21,7 @@ jobs:
           cargo fmt --all -- --check
           cargo clippy -- -Dwarnings
   build-windows:
+    needs: lint
     runs-on: windows-latest
     name: Release build for Windows
     steps:
@@ -38,6 +38,7 @@ jobs:
           path: target/release/awsbck.exe
 
   build-macos:
+    needs: lint
     runs-on: macos-latest
     name: Release build for macOS
     steps:
@@ -54,6 +55,7 @@ jobs:
           path: target/release/awsbck
 
   build-linux:
+    needs: lint
     runs-on: ubuntu-latest
     name: Release build for linux x86_64
     steps:
@@ -74,7 +76,9 @@ jobs:
           path: target/x86_64-unknown-linux-musl/release/awsbck
 
   build-arm:
+    needs: lint
     name: Release builds for linux ARM
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -83,7 +87,6 @@ jobs:
           - target: armv7-unknown-linux-gnueabihf
             arch: armv7
         target: ['aarch64-unknown-linux-musl', 'armv7-unknown-linux-gnueabihf']
-    runs-on: ubuntu-latest
     steps:
       - uses: dtolnay/rust-toolchain@stable
         with:
