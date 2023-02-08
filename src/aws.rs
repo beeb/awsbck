@@ -24,14 +24,23 @@ pub async fn upload_file(archive_path: PathBuf, _temp_dir: TempDir, params: &Par
         .load()
         .await;
     let client = Client::new(&shared_config);
-    let filename = format!(
-        "awsbck_{}.tar.gz",
-        params
-            .folder
-            .file_name()
-            .map(|f| f.to_string_lossy().to_string())
-            .unwrap_or("backup".to_string())
-    );
+    let filename = params
+        .filename
+        .clone()
+        .map(|f| match f {
+            f if !f.ends_with(".tar.gz") => format!("{f}.tar.gz"),
+            f => f,
+        })
+        .unwrap_or_else(|| {
+            format!(
+                "awsbck_{}.tar.gz",
+                params
+                    .folder
+                    .file_name()
+                    .map(|f| f.to_string_lossy().to_string())
+                    .unwrap_or("backup".to_string())
+            )
+        });
     let multipart_upload_res: CreateMultipartUploadOutput = client
         .create_multipart_upload()
         .bucket(&params.aws_bucket)

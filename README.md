@@ -19,6 +19,7 @@ Arguments:
 
 Options:
   -i, --interval <SECONDS>  Specify an interval in seconds to run the backup periodically [env: AWSBCK_INTERVAL=]
+  -f, --filename <NAME>     The name of the archive that will be uploaded to S3, without extension (optional) [env: AWSBCK_FILENAME=]
   -r, --region <REGION>     The AWS S3 region [env: AWS_REGION=]
   -b, --bucket <BUCKET>     The AWS S3 bucket name [env: AWS_BUCKET=]
       --id <KEY_ID>         The AWS S3 access key ID [env: AWS_ACCESS_KEY_ID=]
@@ -40,6 +41,16 @@ $ awsbck -i 3600 -b my_bucket /my_folder
 
 ## Installation
 
+### Prebuilt binaries
+
+Check out [the releases](https://github.com/beeb/awsbck-rs/releases) for prebuilt binaries.
+
+### Cargo
+
 ```shell
 $ cargo install awsbck
 ```
+
+### Docker
+
+Coming soon
