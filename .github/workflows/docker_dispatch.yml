@@ -19,7 +19,6 @@ jobs:
           latest: true
           tarBall: true
           zipBall: false
-
       - name: extract binaries
         run: |
           tar -xzvf awsbck-v*-linux-x64.tar.gz && mkdir linux_amd64 && mv awsbck linux_amd64/awsbck
