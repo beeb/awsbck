@@ -21,6 +21,10 @@ struct Cli {
     #[arg(short, long, value_name = "SECONDS", env = "AWSBCK_INTERVAL")]
     interval: Option<u64>,
 
+    /// The name of the archive that will be uploaded to S3, without extension (optional)
+    #[arg(short, long, value_name = "NAME", env = "AWSBCK_FILENAME")]
+    filename: Option<String>,
+
     /// The AWS S3 region
     #[arg(
         short = 'r',
@@ -59,6 +63,8 @@ pub struct Params {
     pub folder: PathBuf,
     /// An optional interval duration in seconds
     pub interval: Option<u64>,
+    /// The name of the archive that will be uploaded to S3 (without extension)
+    pub filename: Option<String>,
     /// The AWS S3 region
     pub aws_region: RegionProviderChain,
     /// The AWS S3 bucket name
@@ -100,6 +106,7 @@ pub async fn parse_config() -> Result<Params> {
     Ok(Params {
         folder,
         interval: params.interval,
+        filename: params.filename,
         aws_region,
         aws_bucket,
         aws_key_id,
