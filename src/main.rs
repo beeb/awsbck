@@ -3,12 +3,11 @@
 #![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use anyhow::{anyhow, Context, Result};
 use dotenvy::dotenv;
-use tokio::sync::mpsc;
-use tokio_cron_scheduler::{Job, JobScheduler};
+use tokio::{task, time};
 
 use backup::backup;
 use config::parse_config;
@@ -20,35 +19,29 @@ mod prelude;
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
-    let (tx, mut rx) = mpsc::unbounded_channel();
 
     let params = Arc::new(parse_config().await?);
 
     println!("Will backup '{}'", params.folder.to_string_lossy());
 
-    match params.schedule.clone() {
-        Some(schedule) => {
-            let mut sched = JobScheduler::new().await?;
-            let job = Job::new_async(schedule, move |_, _| {
+    match params.interval {
+        Some(interval) => {
+            let task = task::spawn(async move {
                 let shared_params = Arc::clone(&params);
-                Box::pin(async move {
+                let mut interval = time::interval(Duration::from_secs(interval));
+                loop {
+                    interval.tick().await;
                     match backup(&shared_params).await {
-                        Ok(_) => println!("Backup succeeded"),
-                        Err(e) => eprintln!("Backup error: {e:#?}"),
+                        Ok(_) => {
+                            println!("Backup succeeded");
+                        }
+                        Err(e) => {
+                            eprintln!("Backup error: {e:#}");
+                        }
                     }
-                })
-            })?;
-            sched.add(job).await?;
-            sched.shutdown_on_ctrl_c();
-            sched.set_shutdown_handler(Box::new(move || {
-                let tx = tx.clone();
-                Box::pin(async move {
-                    let _ = tx.send(true);
-                    println!("Shut down done");
-                })
-            }));
-            sched.start().await?;
-            rx.recv().await;
+                }
+            });
+            task.await?;
         }
         None => {
             backup(&params)
@@ -57,6 +50,5 @@ async fn main() -> Result<()> {
             println!("Backup succeeded");
         }
     }
-
     Ok(())
 }
