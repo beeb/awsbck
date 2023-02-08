@@ -31,6 +31,7 @@ Options:
 ### Example
 
 ```shell
+# The .env file in the current directory is read by awsbck
 $ cat .env
 AWS_REGION="eu-central-1"
 AWS_ACCESS_KEY_ID="YOUR_KEY_ID"
