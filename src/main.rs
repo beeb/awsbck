@@ -18,7 +18,7 @@ mod backup;
 mod config;
 mod prelude;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
     dotenv().ok();
     if env::var("RUST_LOG").is_err() {
