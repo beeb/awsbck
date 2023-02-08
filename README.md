@@ -67,4 +67,43 @@ $ cargo install awsbck
 
 ### Docker
 
-Coming soon
+This utility is available as a [docker image `vbersier/awsbck`](https://hub.docker.com/r/vbersier/awsbck).
+
+There are two tag variants, one running as a non-root user (`latest`) and one as a root user (`root-latest`).
+
+This image is particularly useful to backup named volumes in docker. If you encounter problems where the `awsbck` logs
+report a permissions problem, then you can try to switch to the `root-latest` tag.
+
+Below an example of using it with `docker compose`:
+
+```yml
+---
+version: '3.2'
+
+volumes:
+  database:
+
+services:
+  postgresql:
+    image: postgres:14
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: database
+        target: /var/lib/postgresql/data/
+  awsbck:
+    image: vbersier/awsbck:root-latest # postgres uses UID 999 which can't be accessed as nonroot
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: database
+        target: /database
+        read_only: true
+    environment:
+      AWSBCK_FOLDER: /database
+      AWSBCK_INTERVAL: 86400 # every 24h
+      AWS_REGION: eu-central-1
+      AWS_BUCKET: my_bucket
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+```
