@@ -1,6 +1,8 @@
-# awsbck
+<h1 align="center">awsbck</h1>
 
+<p align="center">
 This utility lets you `tar.gz` a folder and upload it to a AWS S3 bucket, once or periodically.
+</p>
 
 ## Usage
 
