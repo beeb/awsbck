@@ -39,6 +39,17 @@ AWS_SECRET_ACCESS_KEY="yoursecret"
 $ awsbck -i 3600 -b my_bucket /my_folder
 ```
 
+### Docker example
+
+```
+$ docker run \
+  --rm \
+  --mount type=bind,src="$(pwd)"/target,dst=/target,readonly \
+  -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+  vbersier/awsbck:latest \
+  -i 3600 -b my_bucket /target
+```
+
 ## Installation
 
 ### Prebuilt binaries
