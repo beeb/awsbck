@@ -1,4 +1,4 @@
-use std::{env, path::PathBuf};
+use std::path::PathBuf;
 
 use anyhow::{anyhow, Context, Result};
 use aws_config::meta::region::RegionProviderChain;
@@ -12,31 +12,49 @@ use crate::prelude::*;
 #[command(version, about, long_about = None)]
 struct Cli {
     /// Path to the folder to backup
-    ///
-    /// If not specified, defaults to "/dockerbck"
-    #[arg(value_hint = clap::ValueHint::DirPath)]
+    #[arg(value_hint = clap::ValueHint::DirPath, env = "DOCKERBCK_FOLDER")]
     folder: Option<PathBuf>,
 
     /// Specify a cron expression to run the backup periodically
     ///
     /// If not specified, the backup will only run once
-    #[arg(short, long, value_name = "CRON")]
+    #[arg(short, long, value_name = "CRON", env = "DOCKERBCK_SCHEDULE")]
     schedule: Option<String>,
 
     /// The AWS S3 region
-    #[arg(short = 'r', long = "region", value_name = "REGION")]
+    #[arg(
+        short = 'r',
+        long = "region",
+        value_name = "REGION",
+        env = "AWS_REGION"
+    )]
     aws_region: Option<String>,
 
     /// The AWS S3 bucket name
-    #[arg(short = 'b', long = "bucket", value_name = "BUCKET")]
+    #[arg(
+        short = 'b',
+        long = "bucket",
+        value_name = "BUCKET",
+        env = "AWS_BUCKET"
+    )]
     aws_bucket: Option<String>,
 
     /// The AWS S3 access key ID
-    #[arg(short = 'i', long = "id", value_name = "KEY_ID")]
+    #[arg(
+        short = 'i',
+        long = "id",
+        value_name = "KEY_ID",
+        env = "AWS_ACCESS_KEY_ID"
+    )]
     aws_key_id: Option<String>,
 
     /// The AWS S3 secret access key
-    #[arg(short = 't', long = "token", value_name = "KEY")]
+    #[arg(
+        short = 't',
+        long = "token",
+        value_name = "KEY",
+        env = "AWS_SECRET_ACCESS_KEY"
+    )]
     aws_key: Option<String>,
 }
 
@@ -58,27 +76,11 @@ pub struct Params {
 
 /// Parse the command-line arguments and environment variables into runtime params
 pub async fn parse_config() -> Result<Params> {
-    let mut params = Cli::parse();
+    let params = Cli::parse();
 
-    params.folder = params
-        .folder
-        .or_else(|| env::var("DOCKERBCK_FOLDER").ok().map(PathBuf::from))
-        .or_else(|| Some(PathBuf::from("/dockerbox")));
-
-    params.schedule = params
-        .schedule
-        .or_else(|| env::var("DOCKERBCK_SCHEDULE").ok());
-
-    params.aws_region = params.aws_region.or_else(|| env::var("AWS_REGION").ok());
-    params.aws_bucket = params.aws_bucket.or_else(|| env::var("AWS_BUCKET").ok());
-    params.aws_key_id = params
-        .aws_key_id
-        .or_else(|| env::var("AWS_ACCESS_KEY_ID").ok());
-    params.aws_key = params
-        .aws_key
-        .or_else(|| env::var("AWS_SECRET_ACCESS_KEY").ok());
-
-    let folder = params.folder.or_panic(); // Ok to unwrap due to default value
+    let Some(folder) = params.folder else {
+        return Err(anyhow!("No folder path was provided"));
+    };
     let folder = folder
         .canonicalize()
         .with_context(|| anyhow!("Could not resolve path {}", folder.to_string_lossy()))?;

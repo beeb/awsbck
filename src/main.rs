@@ -3,7 +3,7 @@
 #![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use anyhow::{anyhow, Context, Result};
 use dotenvy::dotenv;
@@ -26,7 +26,7 @@ async fn main() -> Result<()> {
 
     match params.schedule.clone() {
         Some(schedule) => {
-            let sched = JobScheduler::new().await?;
+            let mut sched = JobScheduler::new().await?;
             let job = Job::new_async(schedule, move |_, _| {
                 let shared_params = Arc::clone(&params);
                 Box::pin(async move {
@@ -37,6 +37,16 @@ async fn main() -> Result<()> {
                 })
             })?;
             sched.add(job).await?;
+            sched.shutdown_on_ctrl_c();
+            sched.set_shutdown_handler(Box::new(|| {
+                Box::pin(async move {
+                    println!("Shut down done");
+                })
+            }));
+            sched.start().await?;
+            loop {
+                tokio::time::sleep(Duration::from_millis(500)).await;
+            }
         }
         None => {
             backup(&params)
