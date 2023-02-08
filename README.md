@@ -4,6 +4,10 @@
 This utility lets you `tar.gz` a folder and upload it to a AWS S3 bucket, once or periodically.
 </p>
 
+## Disclaimer
+
+This software is in early alpha. It is not intended for production use yet. It has not been thouroughly tested yet.
+
 ## Usage
 
 ```
