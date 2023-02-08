@@ -13,6 +13,7 @@ use tokio::{task, time};
 use backup::backup;
 use config::parse_config;
 
+mod aws;
 mod backup;
 mod config;
 mod prelude;
