@@ -1,0 +1,33 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: Check
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo check
+
+  fmt:
+    runs-on: ubuntu-latest
+    name: Rustfmt
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: rustup component add rustfmt
+      - run: cargo fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    name: Clippy
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: rustup component add clippy
+      - run: cargo clippy -- -Dwarnings
