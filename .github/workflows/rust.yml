@@ -20,6 +20,7 @@ jobs:
           cargo check
           cargo fmt --all -- --check
           cargo clippy -- -Dwarnings
+
   build-windows:
     needs: lint
     runs-on: windows-latest
