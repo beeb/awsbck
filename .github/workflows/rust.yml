@@ -127,8 +127,8 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: awsbck-armv7
-          path: linux_arm/v7/awsbck
-      - run: chmod +x linux_amd64/awsbck && chmod +x linux_arm64/awsbck && chmod +x linux_arm/v7/awsbck
+          path: linux_arm/awsbck
+      - run: chmod +x linux_amd64/awsbck && chmod +x linux_arm64/awsbck && chmod +x linux_arm/awsbck
       - name: Docker metadata # generates tags (version number and "latest") and labels
         id: meta
         uses: docker/metadata-action@v4
@@ -156,10 +156,18 @@ jobs:
     needs: [build-linux, build-arm, build-windows, build-macos]
     name: Create Github release
     runs-on: ubuntu-latest
+    environment: Cargo
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        run: |
+          cargo login
+          cargo publish
       - name: extract version from Cargo.toml
         uses: SebRollen/toml-action@v1.0.2
         id: version
