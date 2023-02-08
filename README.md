@@ -41,6 +41,16 @@ $ awsbck -i 3600 -b my_bucket /my_folder
 
 ## Installation
 
+### Prebuilt binaries
+
+Check out [the releases](https://github.com/beeb/awsbck-rs/releases) for prebuilt binaries.
+
+### Cargo
+
 ```shell
 $ cargo install awsbck
 ```
+
+### Docker
+
+Coming soon
