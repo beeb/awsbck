@@ -42,6 +42,9 @@ $ awsbck -i 3600 -b my_bucket /my_folder
 ### Docker example
 
 ```
+$ export AWS_REGION="eu-central-1"
+$ export AWS_ACCESS_KEY_ID="YOUR_KEY_ID"
+$ export AWS_SECRET_ACCESS_KEY="yoursecret"
 $ docker run \
   --rm \
   --mount type=bind,src="$(pwd)"/target,dst=/target,readonly \
