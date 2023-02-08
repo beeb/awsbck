@@ -40,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: vbersier/remote-wol-rs
+          images: vbersier/awsbck
           flavor: |
             latest=true
           tags: |
