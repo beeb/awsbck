@@ -4,7 +4,6 @@ use anyhow::{anyhow, Context, Result};
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::Region;
 use clap::{command, Parser};
-use cron::Schedule;
 
 use crate::prelude::*;
 
@@ -15,11 +14,11 @@ struct Cli {
     #[arg(value_hint = clap::ValueHint::DirPath, env = "AWSBCK_FOLDER")]
     folder: Option<PathBuf>,
 
-    /// Specify a cron expression to run the backup periodically
+    /// Specify an interval in seconds to run the backup periodically
     ///
     /// If not specified, the backup will only run once
-    #[arg(short, long, value_name = "CRON", env = "AWSBCK_SCHEDULE")]
-    schedule: Option<String>,
+    #[arg(short, long, value_name = "SECONDS", env = "AWSBCK_INTERVAL")]
+    interval: Option<u64>,
 
     /// The AWS S3 region
     #[arg(
@@ -40,18 +39,13 @@ struct Cli {
     aws_bucket: Option<String>,
 
     /// The AWS S3 access key ID
-    #[arg(
-        short = 'i',
-        long = "id",
-        value_name = "KEY_ID",
-        env = "AWS_ACCESS_KEY_ID"
-    )]
+    #[arg(long = "id", value_name = "KEY_ID", env = "AWS_ACCESS_KEY_ID")]
     aws_key_id: Option<String>,
 
     /// The AWS S3 secret access key
     #[arg(
-        short = 't',
-        long = "token",
+        short = 'k',
+        long = "key",
         value_name = "KEY",
         env = "AWS_SECRET_ACCESS_KEY"
     )]
@@ -62,8 +56,8 @@ struct Cli {
 pub struct Params {
     /// Which folder to backup
     pub folder: PathBuf,
-    /// An optional parsed cron expression
-    pub schedule: Option<Schedule>,
+    /// An optional interval duration in seconds
+    pub interval: Option<u64>,
     /// The AWS S3 region
     pub aws_region: RegionProviderChain,
     /// The AWS S3 bucket name
@@ -88,14 +82,6 @@ pub async fn parse_config() -> Result<Params> {
         return Err(anyhow!("'{}' is not a folder", folder.to_string_lossy()));
     }
 
-    let schedule: Option<Schedule> = match params.schedule {
-        Some(s) => Some(
-            s.parse()
-                .with_context(|| anyhow!("Could not parse cron expression"))?,
-        ),
-        None => None,
-    };
-
     let aws_region = RegionProviderChain::first_try(params.aws_region.map(Region::new))
         .or_default_provider()
         .or_else(Region::new("us-east-1"));
@@ -112,7 +98,7 @@ pub async fn parse_config() -> Result<Params> {
 
     Ok(Params {
         folder,
-        schedule,
+        interval: params.interval,
         aws_region,
         aws_bucket,
         aws_key_id,
