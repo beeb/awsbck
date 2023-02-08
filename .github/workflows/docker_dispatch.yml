@@ -64,6 +64,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: vbersier/awsbck
+          flavor: |
+            latest=false
           tags: |
             type=raw,value=root-${{steps.semver.outputs.major}},enable=${{ steps.semver.outputs.major != '0' }}
             type=raw,value=root-${{steps.semver.outputs.major}}.${{steps.semver.outputs.minor}}
