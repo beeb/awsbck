@@ -1,0 +1,190 @@
+name: Rust
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Check
+    steps:
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@v3
+      - run: |
+          rustup component add rustfmt clippy
+          cargo check
+          cargo fmt --all -- --check
+          cargo clippy -- -Dwarnings
+
+  build-windows:
+    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
+    needs: lint
+    runs-on: windows-latest
+    name: Release build for Windows
+    steps:
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@v3
+      - name: Build release binary
+        run: cargo build --release
+        env:
+          RUSTFLAGS: '-C target-feature=+crt-static'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: awsbck-windows
+          path: target/release/awsbck.exe
+
+  build-macos:
+    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
+    needs: lint
+    runs-on: macos-latest
+    name: Release build for macOS
+    steps:
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@v3
+      - name: Build release binary
+        run: cargo build --release
+        env:
+          LZMA_API_STATIC: 'true'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: awsbck-macos
+          path: target/release/awsbck
+
+  build-linux:
+    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
+    needs: lint
+    runs-on: ubuntu-latest
+    name: Release build for linux x86_64
+    steps:
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+      - uses: Swatinem/rust-cache@v2
+      - name: Install musl tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends musl-tools
+      - uses: actions/checkout@v3
+      - name: Build release binary
+        run: cargo build --release --target x86_64-unknown-linux-musl
+      - uses: actions/upload-artifact@v3
+        with:
+          name: awsbck-linux
+          path: target/x86_64-unknown-linux-musl/release/awsbck
+
+  build-arm:
+    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
+    needs: lint
+    name: Release builds for linux ARM
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-unknown-linux-musl
+            arch: aarch64
+          - target: armv7-unknown-linux-gnueabihf
+            arch: armv7
+        target: ['aarch64-unknown-linux-musl', 'armv7-unknown-linux-gnueabihf']
+    steps:
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo install cross --git https://github.com/cross-rs/cross
+      - uses: actions/checkout@v3
+      - run: cross build --release --target ${{ matrix.target }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: awsbck-${{ matrix.arch }}
+          path: target/${{ matrix.target }}/release/awsbck
+
+  build-docker:
+    if: github.ref_type == 'tag'
+    needs: [build-linux, build-arm]
+    name: Create docker container
+    runs-on: ubuntu-latest
+    environment: Docker
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-buildx-action@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: awsbck-linux
+          path: linux_amd64/awsbck
+      - uses: actions/download-artifact@v3
+        with:
+          name: awsbck-aarch64
+          path: linux_arm64/awsbck
+      - uses: actions/download-artifact@v3
+        with:
+          name: awsbck-armv7
+          path: linux_arm/v7/awsbck
+      - run: chmod +x linux_amd64/awsbck && chmod +x linux_arm64/awsbck && chmod +x linux_arm/v7/awsbck
+      - name: Docker metadata # generates tags (version number and "latest") and labels
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: vbersier/awsbck
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: .
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+
+  make-release:
+    if: github.ref_type == 'tag'
+    needs: [build-linux, build-arm, build-windows, build-macos]
+    name: Create Github release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: extract version from Cargo.toml
+        uses: SebRollen/toml-action@v1.0.2
+        id: version
+        with:
+          file: Cargo.toml
+          field: package.version
+      - name: download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: create release directory
+        run: mkdir release
+      - name: create release files
+        run: |
+          tar -C ./artifacts/awsbck-linux -czvf ./release/awsbck-v${{ steps.version.outputs.value }}-linux-x64.tar.gz awsbck
+          tar -C ./artifacts/awsbck-aarch64 -czvf ./release/awsbck-v${{ steps.version.outputs.value }}-linux-aarch64.tar.gz awsbck
+          tar -C ./artifacts/awsbck-armv7 -czvf ./release/awsbck-v${{ steps.version.outputs.value }}-linux-armv7.tar.gz awsbck
+          zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-windows.zip ./artifacts/awsbck-windows/awsbck.exe
+          zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-macos.zip ./artifacts/awsbck-macos/awsbck
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: awsbck v${{ steps.version.outputs.value }}
+          draft: true
+          generate_release_notes: true
+          files: |
+            release/*.tar.gz
+            release/*.zip

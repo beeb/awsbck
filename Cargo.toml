@@ -1,6 +1,6 @@
 [package]
 name = "awsbck"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 authors = ["Valentin Bersier <vbersier@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -27,3 +27,4 @@ uuid = { version = "1", features = ["v4", "fast-rng"] }
 
 [profile.release]
 lto = "thin"
+strip = true
