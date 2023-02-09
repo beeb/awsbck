@@ -103,7 +103,6 @@ jobs:
             arch: aarch64
           - target: armv7-unknown-linux-gnueabihf
             arch: armv7
-        target: ['aarch64-unknown-linux-musl', 'armv7-unknown-linux-gnueabihf']
     steps:
       - uses: dtolnay/rust-toolchain@stable
         with:
