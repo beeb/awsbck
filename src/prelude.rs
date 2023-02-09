@@ -3,7 +3,7 @@ use std::fmt;
 
 /// An alias for unwrap when the code has been audited to ensure that the value is not None/Err or when panic
 /// is required.
-pub trait OrPanic<T> {
+pub(crate) trait OrPanic<T> {
     /// An alias for unwrap when the code has been audited to ensure that the value is not None/Err or when panic
     /// is required.
     fn or_panic(self) -> T;

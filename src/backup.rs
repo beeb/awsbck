@@ -9,18 +9,26 @@ use uuid::Uuid;
 
 use crate::{aws::upload_file, config::Params};
 
+/// A compressed archive of a folder.
+///
+/// The `_temp_dir` is not used but needs to be kept around until the upload is complete. It going out of scope will
+/// delete the temp folder.
+pub(crate) struct Archive {
+    pub(crate) path: PathBuf,
+    _temp_dir: TempDir,
+}
+
 /// Perform a backup of the folder, uploading it to Dropbox once complete.
-pub async fn backup(params: &Params) -> Result<()> {
-    let (archive_path, temp_dir) =
-        compress_folder(&params.folder).with_context(|| anyhow!("compression failed"))?;
-    upload_file(archive_path, temp_dir, params)
+pub(crate) async fn backup(params: &Params) -> Result<()> {
+    let archive = compress_folder(&params.folder).with_context(|| anyhow!("compression failed"))?;
+    upload_file(archive, params)
         .await
         .with_context(|| anyhow!("upload failed"))?;
     Ok(())
 }
 
 /// Compress the folder into a randomly named tar.gz archive in a temp directory
-fn compress_folder(folder: &Path) -> Result<(PathBuf, TempDir)> {
+fn compress_folder(folder: &Path) -> Result<Archive> {
     // create a temp directory, it will be deleted when the ref goes out of scope
     let dir = TempDir::new()?;
     // generate a random filename
@@ -37,6 +45,9 @@ fn compress_folder(folder: &Path) -> Result<(PathBuf, TempDir)> {
     let res = tar.into_inner()?;
     // make sure the gz layer data is written
     res.finish()?;
-    // we return the temp dir reference to keep it around until the file is uploaded
-    Ok((file_path, dir))
+    // we keep temp dir reference to avoid premature deletion
+    Ok(Archive {
+        path: file_path,
+        _temp_dir: dir,
+    })
 }

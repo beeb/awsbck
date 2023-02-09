@@ -64,25 +64,25 @@ struct Cli {
 }
 
 /// Runtime parameters, parsed, validated and ready to be used
-pub struct Params {
+pub(crate) struct Params {
     /// Which folder to backup
-    pub folder: PathBuf,
+    pub(crate) folder: PathBuf,
     /// An optional interval duration in seconds
-    pub interval: Option<u64>,
+    pub(crate) interval: Option<u64>,
     /// The optional name of the archive that will be uploaded to S3 (without extension)
-    pub filename: Option<String>,
+    pub(crate) filename: Option<String>,
     /// The AWS S3 region, defaults to us-east-1
-    pub aws_region: RegionProviderChain,
+    pub(crate) aws_region: RegionProviderChain,
     /// The AWS S3 bucket name
-    pub aws_bucket: String,
+    pub(crate) aws_bucket: String,
     /// The AWS S3 access key ID
-    pub aws_key_id: String,
+    pub(crate) aws_key_id: String,
     /// The AWS S3 access key
-    pub aws_key: String,
+    pub(crate) aws_key: String,
 }
 
 /// Parse the command-line arguments and environment variables into runtime params
-pub async fn parse_config() -> Result<Params> {
+pub(crate) async fn parse_config() -> Result<Params> {
     // Read from the command-line args, and if not present, check environment variables
     let params = Cli::parse();
 
