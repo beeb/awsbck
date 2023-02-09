@@ -136,3 +136,18 @@ fn sanitize_filename(filename: impl Into<String>) -> String {
     filename.retain(|c| c.is_ascii_alphanumeric() || VALID_FILENAME_CHARS.contains(c));
     filename
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sanitize_filename() {
+        assert_eq!(&sanitize_filename("foo123"), "foo123");
+        assert_eq!(&sanitize_filename("foo bar"), "foobar");
+        assert_eq!(&sanitize_filename("foo/bar"), "foo/bar");
+        assert_eq!(&sanitize_filename("foo.tar.gz"), "foo.tar.gz");
+        assert_eq!(&sanitize_filename("٣৬¾①"), "");
+        assert_eq!(&sanitize_filename("!-_.*'()/"), "!-_.*'()/");
+    }
+}
