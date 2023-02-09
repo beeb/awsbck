@@ -8,6 +8,9 @@ use log::*;
 
 use crate::prelude::*;
 
+/// https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+const VALID_FILENAME_CHARS: &str = "!-_.*'()/"; // plus alphanumeric
+
 /// CLI Parser uses `clap`.
 ///
 /// command args take precedence over environment variables.
@@ -109,13 +112,42 @@ pub async fn parse_config() -> Result<Params> {
         return Err(anyhow!("No AWS secret key was provided"));
     };
 
+    // sanitize filename
+    let filename = params
+        .filename
+        .map(sanitize_filename)
+        .filter(|s| !s.is_empty()); // if only bad chars were provided, ignore and use default filename
+
     Ok(Params {
         folder,
         interval: params.interval,
-        filename: params.filename,
+        filename,
         aws_region,
         aws_bucket,
         aws_key_id,
         aws_key,
     })
+}
+
+/// Only keep recommended chars for S3 object keys
+fn sanitize_filename(filename: impl Into<String>) -> String {
+    let mut filename: String = filename.into();
+    // remove invalid characters
+    filename.retain(|c| c.is_ascii_alphanumeric() || VALID_FILENAME_CHARS.contains(c));
+    filename
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sanitize_filename() {
+        assert_eq!(&sanitize_filename("foo123"), "foo123");
+        assert_eq!(&sanitize_filename("foo bar"), "foobar");
+        assert_eq!(&sanitize_filename("foo/bar"), "foo/bar");
+        assert_eq!(&sanitize_filename("foo.tar.gz"), "foo.tar.gz");
+        assert_eq!(&sanitize_filename("٣৬¾①"), "");
+        assert_eq!(&sanitize_filename("!-_.*'()/"), "!-_.*'()/");
+    }
 }
