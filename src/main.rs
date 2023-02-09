@@ -23,7 +23,8 @@ mod prelude;
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
     dotenv().ok(); // load .env file if present
-                   // set default logging level. we ignore info logs from aws
+
+    // set default logging level. we ignore info logs from aws
     if env::var("RUST_LOG").is_err() {
         env::set_var(
             "RUST_LOG",
