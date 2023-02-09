@@ -1,20 +1,12 @@
-FROM debian:bullseye-slim AS builder
+FROM gcr.io/distroless/static-debian11:nonroot
 
 ARG TARGETOS
 ARG TARGETARCH
 
 WORKDIR /awsbck
 
-# Copy binary and adjust permissions
-COPY ./${TARGETOS}_${TARGETARCH}/awsbck .
-RUN chmod +x awsbck
-
-FROM gcr.io/distroless/static-debian11:nonroot
-
-WORKDIR /awsbck
-
-# Copy the binary with correct permissions
-COPY --from=builder /awsbck/awsbck .
+# Copy the binary with correct permissions (requires buildx?)
+COPY --chmod=0755 ./${TARGETOS}_${TARGETARCH}/awsbck .
 
 USER nonroot:nonroot
 
