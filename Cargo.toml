@@ -22,7 +22,7 @@ flate2 = "1"
 log = "0.4"
 tar = "0.4"
 temp-dir = "0.1"
-tokio = { version = "1", features = ["rt", "macros"] }
+tokio = { version = "1", features = ["rt", "macros", "signal"] }
 uuid = { version = "1", features = ["v4", "fast-rng"] }
 
 [profile.release]
