@@ -117,7 +117,7 @@ services:
       - type: volume
         source: database-backup
         target: /backup
-  # this service will send a dump command to the postgres container periodically
+  # this service will send a dump command to the postgres container periodically (here 6h)
   # and store the resulting file in the `database-backup` volume mounted at `/backup`
   postgres-backup:
     image: docker:cli
