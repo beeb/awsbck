@@ -13,9 +13,8 @@ use aws_sdk_s3::{
 };
 use aws_smithy_http::byte_stream::Length;
 use log::*;
-use temp_dir::TempDir;
 
-use crate::config::Params;
+use crate::{backup::Archive, config::Params};
 
 /// In bytes, minimum chunk size of 5MB. Increase CHUNK_SIZE to send larger chunks.
 const CHUNK_SIZE: u64 = 1024 * 1024 * 5;
@@ -25,7 +24,7 @@ const MAX_CHUNKS: u64 = 10000;
 ///
 /// The `_temp_dir` is not used but needs to be kept around until the upload is complete. It going out of scope will
 /// delete the temp folder.
-pub async fn upload_file(archive_path: PathBuf, _temp_dir: TempDir, params: &Params) -> Result<()> {
+pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()> {
     // we want to use `from_env` below, so make sure that environment variables are set properly, even if data comes
     // from the command line args
     env::set_var("AWS_ACCESS_KEY_ID", &params.aws_key_id);
@@ -63,7 +62,7 @@ pub async fn upload_file(archive_path: PathBuf, _temp_dir: TempDir, params: &Par
     let upload_id = multipart_upload_res
         .upload_id()
         .ok_or_else(|| anyhow!("upload_id not found"))?; // convert option to error if None
-    let file_size = get_file_size(&archive_path)?;
+    let file_size = get_file_size(&archive.path)?;
     let mut chunk_count = (file_size / CHUNK_SIZE) + 1;
     let mut size_of_last_chunk = file_size % CHUNK_SIZE;
     // if the file size is exactly a multiple of CHUNK_SIZE, we don't need the extra chunk
@@ -90,7 +89,7 @@ pub async fn upload_file(archive_path: PathBuf, _temp_dir: TempDir, params: &Par
         };
         // take the relevant part of the file corresponding to this chunk
         let stream = ByteStream::read_from()
-            .path(&archive_path)
+            .path(&archive.path)
             .offset(chunk_index * CHUNK_SIZE)
             .length(Length::Exact(this_chunk))
             .build()
