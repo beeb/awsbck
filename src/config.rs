@@ -8,6 +8,9 @@ use log::*;
 
 use crate::prelude::*;
 
+/// CLI Parser uses `clap`.
+///
+/// command args take precedence over environment variables.
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
@@ -57,15 +60,15 @@ struct Cli {
     aws_key: Option<String>,
 }
 
-/// Runtime parameters, parsed and ready to be used
+/// Runtime parameters, parsed, validated and ready to be used
 pub struct Params {
     /// Which folder to backup
     pub folder: PathBuf,
     /// An optional interval duration in seconds
     pub interval: Option<u64>,
-    /// The name of the archive that will be uploaded to S3 (without extension)
+    /// The optional name of the archive that will be uploaded to S3 (without extension)
     pub filename: Option<String>,
-    /// The AWS S3 region
+    /// The AWS S3 region, defaults to us-east-1
     pub aws_region: RegionProviderChain,
     /// The AWS S3 bucket name
     pub aws_bucket: String,
@@ -77,18 +80,21 @@ pub struct Params {
 
 /// Parse the command-line arguments and environment variables into runtime params
 pub async fn parse_config() -> Result<Params> {
+    // Read from the command-line args, and if not present, check environment variables
     let params = Cli::parse();
 
+    // ensure we have all the required parameters
     let Some(folder) = params.folder else {
         return Err(anyhow!("No folder path was provided"));
     };
+    // make sure folder exists
     let folder = folder
         .canonicalize()
         .with_context(|| anyhow!("Could not resolve path {}", folder.to_string_lossy()))?;
     if !folder.is_dir() {
         return Err(anyhow!("'{}' is not a folder", folder.to_string_lossy()));
     }
-
+    // all AWS parameters are required
     let aws_region = RegionProviderChain::first_try(params.aws_region.map(Region::new))
         .or_default_provider()
         .or_else(Region::new("us-east-1"));
