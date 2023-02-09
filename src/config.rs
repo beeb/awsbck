@@ -9,7 +9,7 @@ use log::*;
 use crate::prelude::*;
 
 /// https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
-const VALID_FILENAME_CHARS: &str = "!-_.*()"; // plus alphanumeric
+const VALID_FILENAME_CHARS: &str = "!-_.*'()"; // plus alphanumeric
 
 /// CLI Parser uses `clap`.
 ///
