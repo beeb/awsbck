@@ -129,12 +129,14 @@ pub(crate) async fn parse_config() -> Result<Params> {
     })
 }
 
-/// Only keep recommended chars for S3 object keys
+/// Only keep recommended chars for S3 object keys and truncate to 1000 chars
 fn sanitize_filename(filename: impl Into<String>) -> String {
     let mut filename: String = filename.into();
     // remove invalid characters
     filename.retain(|c| c.is_ascii_alphanumeric() || VALID_FILENAME_CHARS.contains(c));
-    filename
+    // since we only have ascii and single-byte special chars, we should be able to keep 1024 chars to stay under
+    // 1024 bytes, but for good measure we'll limit to 1000
+    filename.chars().take(1000).collect()
 }
 
 #[cfg(test)]
@@ -147,7 +149,8 @@ mod tests {
         assert_eq!(&sanitize_filename("foo bar"), "foobar");
         assert_eq!(&sanitize_filename("foo/bar"), "foo/bar");
         assert_eq!(&sanitize_filename("foo.tar.gz"), "foo.tar.gz");
-        assert_eq!(&sanitize_filename("٣৬¾①"), "");
+        assert_eq!(&sanitize_filename("٣৬¾①🦀"), "");
         assert_eq!(&sanitize_filename("!-_.*'()/"), "!-_.*'()/");
+        assert_eq!(sanitize_filename("Bar1".repeat(256)), "Bar1".repeat(250));
     }
 }
