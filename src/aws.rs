@@ -12,6 +12,7 @@ use aws_sdk_s3::{
     Client,
 };
 use aws_smithy_http::byte_stream::Length;
+use log::*;
 use temp_dir::TempDir;
 
 use crate::config::Params;
@@ -129,6 +130,8 @@ pub async fn upload_file(archive_path: PathBuf, _temp_dir: TempDir, params: &Par
         .upload_id(upload_id)
         .send()
         .await?;
+
+    info!("Archive uploaded as \"{}\"", &filename);
     Ok(())
 }
 
