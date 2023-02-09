@@ -92,14 +92,19 @@ There are two tag variants, one running as a non-root user (`latest`) and one as
 This image is particularly useful to backup named volumes in docker. If you encounter problems where the `awsbck` logs
 report a permissions problem, then you can try to switch to the `root-latest` tag.
 
-Below an example of using it with `docker compose`:
+Below an example of using it with `docker compose`. In order to make sure the backup happens properly, we can't just
+copy the db data, as it might be in the middle of a write or other operation. Thus we send the `pg_dumpall` command
+and store the resulting dump to a separate volume that we can backup to S3.
 
 ```yml
 ---
 version: '3.2'
 
 volumes:
+  # the first volume is to persist the database raw data
   database:
+  # this volume will be used to share the dump file with awsbck
+  database-backup:
 
 services:
   postgresql:
@@ -109,17 +114,36 @@ services:
       - type: volume
         source: database
         target: /var/lib/postgresql/data/
+      - type: volume
+        source: database-backup
+        target: /backup
+  # this service will send a dump command to the postgres container periodically
+  # and store the resulting file in the `database-backup` volume mounted at `/backup`
+  postgres-backup:
+    image: docker:cli
+    container_name: postgres_backup
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    command:
+      [
+        '/bin/sh',
+        '-c',
+        'while true; do sleep 21600; docker exec -t postgres pg_dumpall -c -U postgres > /backup/dump_database.sql; done'
+      ]
+  # we mount the backup volume as read-only and back up the SQL dump every 24h
   awsbck:
     image: vbersier/awsbck:root-latest # postgres uses UID 999 which can't be accessed as nonroot
     restart: unless-stopped
     volumes:
       - type: volume
-        source: database
+        source: database-backup
         target: /database
         read_only: true
     environment:
       AWSBCK_FOLDER: /database
-      AWSBCK_INTERVAL: 86400 # every 24h
+      AWSBCK_INTERVAL: 86400
       AWS_REGION: eu-central-1
       AWS_BUCKET: my_bucket
       AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
