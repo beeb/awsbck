@@ -14,8 +14,13 @@
 
 ## Disclaimer
 
-This software is in early alpha. It is not intended for production use yet. It has not been thoroughly tested yet.
-The CLI options will certainly change.
+This software is young. It is not intended for production use yet. It has not been battle-tested yet.
+
+Use at your own risks!
+
+The CLI options will certainly change, but any breaking change will probably mean an increase in the minor version
+number as per semver, until it reaches `1.0.0`. New features that are backwards-compatible will lead to patch number
+bumps.
 
 ## Usage
 
@@ -35,6 +40,10 @@ Options:
   -h, --help                Print help (see more with '--help')
   -V, --version             Print version
 ```
+
+CLI arguments take precedence over environment variables.
+
+The `--filename` option accepts ASCII alphanumeric characters and `!-_.*'()/`.
 
 ### Example
 
