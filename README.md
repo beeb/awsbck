@@ -43,7 +43,7 @@ Options:
 
 CLI arguments take precedence over environment variables.
 
-The `--filename` option accepts ASCII alphanumeric characters and `!-_.*'()/`.
+The `--filename` option accepts ASCII alphanumeric characters and `!-_.*'()/`. Other characters will be discarded.
 
 ### Example
 
