@@ -149,7 +149,7 @@ mod tests {
         assert_eq!(&sanitize_filename("foo bar"), "foobar");
         assert_eq!(&sanitize_filename("foo/bar"), "foo/bar");
         assert_eq!(&sanitize_filename("foo.tar.gz"), "foo.tar.gz");
-        assert_eq!(&sanitize_filename("٣৬¾①"), "");
+        assert_eq!(&sanitize_filename("٣৬¾①🦀"), "");
         assert_eq!(&sanitize_filename("!-_.*'()/"), "!-_.*'()/");
         assert_eq!(sanitize_filename("Bar1".repeat(256)), "Bar1".repeat(250));
     }
