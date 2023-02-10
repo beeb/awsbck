@@ -30,8 +30,10 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
     env::set_var("AWS_ACCESS_KEY_ID", &params.aws_key_id);
     env::set_var("AWS_SECRET_ACCESS_KEY", &params.aws_key);
     let mut shared_config_builder = aws_config::from_env().region(params.aws_region.region().await);
-    if cfg!(test) {
-        shared_config_builder = shared_config_builder.endpoint_url("http://localhost:9090")
+    // we set this special environment variable when doing e2e testing
+    if env::var("AWSBCK_TESTING_E2E").is_ok() {
+        warn!("Endpoint URL was changed to localhost while in testing environment.");
+        shared_config_builder = shared_config_builder.endpoint_url("http://127.0.0.1:9090")
     }
     let shared_config = shared_config_builder.load().await;
     let client = Client::new(&shared_config);
