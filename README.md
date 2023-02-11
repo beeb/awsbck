@@ -27,15 +27,15 @@ until then.
 ## Usage
 
 ```
-Usage: awsbck [OPTIONS] [FOLDER]
+Usage: awsbck [OPTIONS] --bucket <BUCKET> --id <KEY_ID> --key <KEY> <FOLDER>
 
 Arguments:
-  [FOLDER]  Path to the folder to backup [env: AWSBCK_FOLDER=]
+  <FOLDER>  Path to the folder to backup [env: AWSBCK_FOLDER=]
 
 Options:
   -i, --interval <SECONDS>  Specify an interval in seconds to run the backup periodically [env: AWSBCK_INTERVAL=]
   -f, --filename <NAME>     The name of the archive that will be uploaded to S3, without extension (optional) [env: AWSBCK_FILENAME=]
-  -r, --region <REGION>     The AWS S3 region [env: AWS_REGION=]
+  -r, --region <REGION>     The AWS S3 region [env: AWS_REGION=] [default: us-east-1]
   -b, --bucket <BUCKET>     The AWS S3 bucket name [env: AWS_BUCKET=]
       --id <KEY_ID>         The AWS S3 access key ID [env: AWS_ACCESS_KEY_ID=]
   -k, --key <KEY>           The AWS S3 secret access key [env: AWS_SECRET_ACCESS_KEY=]
