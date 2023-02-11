@@ -136,7 +136,7 @@ services:
       ]
   # we mount the backup volume as read-only and back up the SQL dump every 24h
   awsbck:
-    image: vbersier/awsbck:root-latest # postgres uses UID 999 which can't be accessed as nonroot
+    image: vbersier/awsbck:latest
     restart: unless-stopped
     volumes:
       - type: volume
