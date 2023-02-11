@@ -25,6 +25,9 @@ temp-dir = "0.1"
 tokio = { version = "1", features = ["rt", "macros", "signal"] }
 uuid = { version = "1", features = ["v4", "fast-rng"] }
 
+[dev-dependencies]
+dockertest = "0.3.1"
+
 [profile.release]
 lto = "thin"
 strip = true
