@@ -1,6 +1,6 @@
 [package]
 name = "awsbck"
-version = "0.2.10"
+version = "0.2.11"
 edition = "2021"
 authors = ["Valentin Bersier <vbersier@gmail.com>"]
 license = "MIT OR Apache-2.0"
