@@ -68,6 +68,6 @@ fn e2e_test() {
         let mut sizes_iter = resp.contents().unwrap_or_default().iter().map(|o| o.size());
 
         assert_eq!(objects, vec!["awsbck_src.tar.gz", "test/test.tar.gz"]);
-        assert!(sizes_iter.all(|s| s > 0));
+        assert!(sizes_iter.all(|s| s > 1000));
     });
 }
