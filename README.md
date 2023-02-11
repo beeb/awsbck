@@ -14,13 +14,14 @@
 
 ## Disclaimer
 
-This software is young. It is not intended for production use yet. It has not been battle-tested yet.
+This software is in a beta stage and, although it has not caused any problems in testing, I wouldn't recommend it for
+production use.
 
 Use at your own risks!
 
-The CLI options will certainly change, but any breaking change will probably mean an increase in the minor version
-number as per semver, until it reaches `1.0.0`. New features that are backwards-compatible will lead to patch number
-bumps.
+The CLI will certainly change, but any breaking change should mean an increase in the minor version number as per semver
+, until it reaches `1.0.0`. New features that are backwards-compatible and bug fixes will lead to patch number bumps
+until then.
 
 ## Usage
 
