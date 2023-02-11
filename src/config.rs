@@ -118,7 +118,7 @@ pub(crate) async fn parse_config() -> Result<Params> {
 }
 
 /// Only keep recommended chars for S3 object keys and truncate to 1000 chars
-fn sanitize_filename(filename: impl Into<String>) -> String {
+pub(crate) fn sanitize_filename(filename: impl Into<String>) -> String {
     let mut filename: String = filename.into();
     // remove invalid characters
     filename.retain(|c| c.is_ascii_alphanumeric() || VALID_FILENAME_CHARS.contains(c));
