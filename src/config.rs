@@ -19,7 +19,7 @@ const VALID_FILENAME_CHARS: &str = "!-_.*'()/"; // plus alphanumeric
 struct Cli {
     /// Path to the folder to backup
     #[arg(value_hint = clap::ValueHint::DirPath, env = "AWSBCK_FOLDER")]
-    folder: Option<PathBuf>,
+    folder: PathBuf,
 
     /// Specify an interval in seconds to run the backup periodically
     ///
@@ -36,9 +36,10 @@ struct Cli {
         short = 'r',
         long = "region",
         value_name = "REGION",
-        env = "AWS_REGION"
+        env = "AWS_REGION",
+        default_value_t = String::from("us-east-1")
     )]
-    aws_region: Option<String>,
+    aws_region: String,
 
     /// The AWS S3 bucket name
     #[arg(
@@ -47,11 +48,11 @@ struct Cli {
         value_name = "BUCKET",
         env = "AWS_BUCKET"
     )]
-    aws_bucket: Option<String>,
+    aws_bucket: String,
 
     /// The AWS S3 access key ID
     #[arg(long = "id", value_name = "KEY_ID", env = "AWS_ACCESS_KEY_ID")]
-    aws_key_id: Option<String>,
+    aws_key_id: String,
 
     /// The AWS S3 secret access key
     #[arg(
@@ -60,7 +61,7 @@ struct Cli {
         value_name = "KEY",
         env = "AWS_SECRET_ACCESS_KEY"
     )]
-    aws_key: Option<String>,
+    aws_key: String,
 }
 
 /// Runtime parameters, parsed, validated and ready to be used
@@ -86,31 +87,18 @@ pub(crate) async fn parse_config() -> Result<Params> {
     // Read from the command-line args, and if not present, check environment variables
     let params = Cli::parse();
 
-    // ensure we have all the required parameters
-    let Some(folder) = params.folder else {
-        return Err(anyhow!("No folder path was provided"));
-    };
     // make sure folder exists
-    let folder = folder
+    let folder = params
+        .folder
         .canonicalize()
-        .with_context(|| anyhow!("Could not resolve path {}", folder.to_string_lossy()))?;
+        .with_context(|| anyhow!("Could not resolve path {}", params.folder.to_string_lossy()))?;
     if !folder.is_dir() {
         return Err(anyhow!("'{}' is not a folder", folder.to_string_lossy()));
     }
-    // all AWS parameters are required
-    let aws_region = RegionProviderChain::first_try(params.aws_region.map(Region::new))
-        .or_default_provider()
-        .or_else(Region::new("us-east-1"));
+    // Region defaults to us-east-1 if not provided
+    let aws_region =
+        RegionProviderChain::first_try(Region::new(params.aws_region)).or_default_provider();
     info!("Using AWS region: {}", aws_region.region().await.or_panic());
-    let Some(aws_bucket) = params.aws_bucket else {
-        return Err(anyhow!("No AWS bucket name was provided"));
-    };
-    let Some(aws_key_id) = params.aws_key_id else {
-        return Err(anyhow!("No AWS key ID was provided"));
-    };
-    let Some(aws_key) = params.aws_key else {
-        return Err(anyhow!("No AWS secret key was provided"));
-    };
 
     // sanitize filename
     let filename = params
@@ -123,9 +111,9 @@ pub(crate) async fn parse_config() -> Result<Params> {
         interval: params.interval,
         filename,
         aws_region,
-        aws_bucket,
-        aws_key_id,
-        aws_key,
+        aws_bucket: params.aws_bucket,
+        aws_key_id: params.aws_key_id,
+        aws_key: params.aws_key,
     })
 }
 
