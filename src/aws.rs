@@ -50,14 +50,12 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
         })
         .unwrap_or_else(|| {
             // default filename is awsbck_ + the folder name + .tar.gz
-            format!(
-                "awsbck_{}.tar.gz",
-                params
-                    .folder
-                    .file_name()
-                    .map(|f| sanitize_filename(f.to_string_lossy().to_string()))
-                    .unwrap_or("backup".to_string())
-            )
+            let sanitized_folder_name = params
+                .folder
+                .file_name()
+                .map(|f| sanitize_filename(f.to_string_lossy().to_string()))
+                .unwrap_or("backup".to_string());
+            format!("awsbck_{sanitized_folder_name}.tar.gz")
         });
     let multipart_upload_res: CreateMultipartUploadOutput = client
         .create_multipart_upload()
