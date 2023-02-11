@@ -65,9 +65,14 @@ fn e2e_test() {
             .iter()
             .map(|o| o.key().unwrap_or_default())
             .collect();
-        let mut sizes_iter = resp.contents().unwrap_or_default().iter().map(|o| o.size());
+        let all_sizes = resp
+            .contents()
+            .unwrap_or_default()
+            .iter()
+            .map(|o| o.size())
+            .all(|s| s > 1000);
 
         assert_eq!(objects, vec!["awsbck_src.tar.gz", "test/test.tar.gz"]);
-        assert!(sizes_iter.all(|s| s > 1000));
+        assert!(all_sizes);
     });
 }
