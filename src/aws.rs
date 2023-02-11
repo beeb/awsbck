@@ -14,7 +14,10 @@ use aws_sdk_s3::{
 use aws_smithy_http::byte_stream::Length;
 use log::*;
 
-use crate::{backup::Archive, config::Params};
+use crate::{
+    backup::Archive,
+    config::{sanitize_filename, Params},
+};
 
 /// In bytes, minimum chunk size of 5MB. Increase CHUNK_SIZE to send larger chunks.
 const CHUNK_SIZE: u64 = 1024 * 1024 * 5;
@@ -47,14 +50,12 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
         })
         .unwrap_or_else(|| {
             // default filename is awsbck_ + the folder name + .tar.gz
-            format!(
-                "awsbck_{}.tar.gz",
-                params
-                    .folder
-                    .file_name()
-                    .map(|f| f.to_string_lossy().to_string())
-                    .unwrap_or("backup".to_string())
-            )
+            let sanitized_folder_name = params
+                .folder
+                .file_name()
+                .map(|f| sanitize_filename(f.to_string_lossy().to_string()))
+                .unwrap_or("backup".to_string());
+            format!("awsbck_{sanitized_folder_name}.tar.gz")
         });
     let multipart_upload_res: CreateMultipartUploadOutput = client
         .create_multipart_upload()
