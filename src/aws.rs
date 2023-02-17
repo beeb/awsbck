@@ -2,7 +2,7 @@
 //!
 //! This was adapted from the
 //! [official examples](https://github.com/awslabs/aws-sdk-rust/blob/main/examples/s3/README.md)
-use std::{env, fs::File, path::PathBuf};
+use std::{env, fs::File, path::Path};
 
 use anyhow::{anyhow, Result};
 use aws_sdk_s3::{
@@ -139,7 +139,7 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
 }
 
 /// Utility function to get the file size
-fn get_file_size(archive_path: &PathBuf) -> Result<u64> {
+fn get_file_size(archive_path: impl AsRef<Path>) -> Result<u64> {
     let file = File::open(archive_path)?;
     let metadata = file.metadata()?;
     Ok(metadata.len())

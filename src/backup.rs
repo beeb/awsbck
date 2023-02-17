@@ -28,7 +28,7 @@ pub(crate) async fn backup(params: &Params) -> Result<()> {
 }
 
 /// Compress the folder into a randomly named tar.gz archive in a temp directory
-fn compress_folder(folder: &Path) -> Result<Archive> {
+fn compress_folder(folder: impl AsRef<Path>) -> Result<Archive> {
     // create a temp directory, it will be deleted when the ref goes out of scope
     let dir = TempDir::new()?;
     // generate a random filename
