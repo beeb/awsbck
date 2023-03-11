@@ -3,12 +3,16 @@
 #![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]
 
-use std::{env, sync::Arc, time::Duration};
+use std::{env, sync::Arc};
 
 use anyhow::{anyhow, Context, Result};
+use chrono::Utc;
 use dotenvy::dotenv;
 use log::*;
-use tokio::{task, time};
+use tokio::{
+    task,
+    time::{self, Instant},
+};
 
 use backup::backup;
 use config::parse_config;
@@ -37,18 +41,37 @@ async fn main() -> Result<()> {
     let params = Arc::new(parse_config().await?);
 
     // check if we run the backup once, or periodically forever
-    match params.interval {
-        Some(interval) => {
+    match &params.schedule {
+        Some(schedule) => {
             info!(
-                "Will backup \"{}\" every {interval} seconds",
-                params.folder.to_string_lossy()
+                "Will backup \"{}\" on cron schedule: \"{}\"",
+                params.folder.to_string_lossy(),
+                schedule.to_string()
             );
             // spawn a routine that will run the backup periodically
             let task = task::spawn(async move {
                 let shared_params = Arc::clone(&params);
-                let mut interval = time::interval(Duration::from_secs(interval));
                 loop {
-                    interval.tick().await; // the first tick completes immediately, triggering the backup
+                    // we checked that the schedule exists above, so we can unwrap it
+                    let Some(deadline) = shared_params.schedule.as_ref().or_panic().upcoming(Utc).next() else {
+                        error!("Could not get next execution time for cron schedule");
+                        return;
+                    };
+                    info!("Next backup scheduled for {}", deadline.to_rfc2822());
+                    // tokio's sleep_until` expect an `Instant` and not a Utc::DateTime, let's convert.
+                    // first we get the duration between now and the deadline
+                    let Ok(wait_time) = (deadline - Utc::now()).to_std() else {
+                        error!("Could not convert duration to std Duration");
+                        return;
+                    };
+                    // then we add it to the current instant
+                    let Some(deadline) = Instant::now().checked_add(wait_time) else {
+                        error!("Could not convert deadline to tokio Instant");
+                        return;
+                    };
+                    // and finally we sleep until the next cron execution time
+                    time::sleep_until(deadline).await;
+                    // run the backup
                     match backup(&shared_params).await {
                         Ok(_) => {
                             info!("Backup succeeded");

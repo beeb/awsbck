@@ -15,7 +15,9 @@ anyhow = "1"
 aws-config = "0.54"
 aws-sdk-s3 = "0.24"
 aws-smithy-http = "0.54"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
 clap = { version = "4", features = ["derive", "env"] }
+cron = "0.12"
 dotenvy = "0.15"
 env_logger = "0.10"
 flate2 = "1"

@@ -1,10 +1,17 @@
-use std::{collections::HashMap, env, path::PathBuf, process::Command};
+use std::{
+    collections::HashMap,
+    env,
+    io::Read,
+    path::PathBuf,
+    process::{Command, Stdio},
+};
 
 use aws_sdk_s3::Client;
 use dockertest::{
     waitfor::{MessageSource, MessageWait},
     Composition, DockerTest, Source,
 };
+use tokio::time::sleep;
 
 #[test]
 fn e2e_test() {
@@ -49,6 +56,36 @@ fn e2e_test() {
         assert!(output.status.success());
         assert!(String::from_utf8_lossy(&output.stderr).contains("Backup succeeded"));
 
+        // run on a cron schedule
+        let mut cmd = Command::new(&path)
+            .env("AWSBCK_TESTING_E2E", "1")
+            .args([
+                "-b",
+                "foo",
+                "--id",
+                "bar",
+                "-k",
+                "baz",
+                "-f",
+                "cron_archive",
+                "-c",
+                "*/1 * * * * * *",
+            ])
+            .arg("./src")
+            .stderr(Stdio::piped())
+            .spawn()
+            .expect("Failed to execute command");
+        // wait for a few seconds
+        sleep(std::time::Duration::from_secs(3)).await;
+        // kill process and retrieve output on stderr
+        cmd.kill().unwrap();
+        let mut stderr = cmd.stderr.take().unwrap();
+        let mut output = String::new();
+        stderr.read_to_string(&mut output).unwrap();
+        // check output
+        assert!(output.contains("*/1 * * * * * *"));
+        assert!(output.contains("Next backup scheduled for"));
+
         // check bucket contents
         env::set_var("AWS_ACCESS_KEY_ID", "bar");
         env::set_var("AWS_SECRET_ACCESS_KEY", "baz");
@@ -72,7 +109,14 @@ fn e2e_test() {
             .map(|o| o.size())
             .all(|s| s > 1000);
 
-        assert_eq!(objects, vec!["awsbck_src.tar.gz", "test/test.tar.gz"]);
+        assert_eq!(
+            objects,
+            vec![
+                "awsbck_src.tar.gz",
+                "cron_archive.tar.gz",
+                "test/test.tar.gz"
+            ]
+        );
         assert!(all_sizes);
     });
 }

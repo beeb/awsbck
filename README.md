@@ -33,17 +33,19 @@ Arguments:
   <FOLDER>  Path to the folder to backup [env: AWSBCK_FOLDER=]
 
 Options:
-  -i, --interval <SECONDS>  Specify an interval in seconds to run the backup periodically [env: AWSBCK_INTERVAL=]
-  -f, --filename <NAME>     The name of the archive that will be uploaded to S3, without extension (optional) [env: AWSBCK_FILENAME=]
-  -r, --region <REGION>     The AWS S3 region [env: AWS_REGION=] [default: us-east-1]
-  -b, --bucket <BUCKET>     The AWS S3 bucket name [env: AWS_BUCKET=]
-      --id <KEY_ID>         The AWS S3 access key ID [env: AWS_ACCESS_KEY_ID=]
-  -k, --key <KEY>           The AWS S3 secret access key [env: AWS_SECRET_ACCESS_KEY=]
-  -h, --help                Print help (see more with '--help')
-  -V, --version             Print version
+  -c, --cron <EXPR>      Specify a cron espression to run the backup on a schedule [env: AWSBCK_CRON=]
+  -f, --filename <NAME>  The name of the archive that will be uploaded to S3, without extension (optional) [env: AWSBCK_FILENAME=]
+  -r, --region <REGION>  The AWS S3 region [env: AWS_REGION=] [default: us-east-1]
+  -b, --bucket <BUCKET>  The AWS S3 bucket name [env: AWS_BUCKET=]
+      --id <KEY_ID>      The AWS S3 access key ID [env: AWS_ACCESS_KEY_ID=]
+  -k, --key <KEY>        The AWS S3 secret access key [env: AWS_SECRET_ACCESS_KEY=]
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
 ```
 
 CLI arguments take precedence over environment variables.
+
+The cron expression is parsed by the [`cron`](https://github.com/zslayton/cron) crate, the first item describes seconds.
 
 The `--filename` option accepts ASCII alphanumeric characters and `!-_.*'()/`. Other characters will be discarded.
 
@@ -56,7 +58,7 @@ AWS_REGION="eu-central-1"
 AWS_ACCESS_KEY_ID="YOUR_KEY_ID"
 AWS_SECRET_ACCESS_KEY="yoursecret"
 
-$ awsbck -i 3600 -b my_bucket /my_folder
+$ awsbck -c "@hourly" -b my_bucket /my_folder
 ```
 
 ### Docker example
@@ -70,7 +72,7 @@ $ docker run \
   --mount type=bind,src="$(pwd)"/target,dst=/target,readonly \
   -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
   vbersier/awsbck:latest \
-  -i 3600 -b my_bucket /target
+  -c "15 */10 * * * *" -b my_bucket /target
 ```
 
 ## Installation
@@ -134,7 +136,7 @@ services:
         '-c',
         'while true; do sleep 21600; docker exec -t postgres pg_dumpall -c -U postgres > /backup/dump_database.sql; done'
       ]
-  # we mount the backup volume as read-only and back up the SQL dump every 24h
+  # we mount the backup volume as read-only and back up the SQL dump daily at 3.12am
   awsbck:
     image: vbersier/awsbck:latest
     restart: unless-stopped
@@ -145,7 +147,7 @@ services:
         read_only: true
     environment:
       AWSBCK_FOLDER: /database
-      AWSBCK_INTERVAL: 86400
+      AWSBCK_CRON: '0 12 3 * * * *'
       AWS_REGION: eu-central-1
       AWS_BUCKET: my_bucket
       AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
