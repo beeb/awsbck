@@ -57,6 +57,7 @@ async fn main() -> Result<()> {
                         error!("Could not get next execution time for cron schedule");
                         return;
                     };
+                    info!("Next backup scheduled for {}", deadline.to_rfc2822());
                     let Ok(wait_time) = (deadline - Utc::now()).to_std() else {
                         error!("Could not convert duration to std Duration");
                         return;
