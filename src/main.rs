@@ -51,7 +51,6 @@ async fn main() -> Result<()> {
             // spawn a routine that will run the backup periodically
             let task = task::spawn(async move {
                 let shared_params = Arc::clone(&params);
-                //let mut interval = time::interval(Duration::from_secs(interval));
                 loop {
                     let Some(deadline) = shared_params.schedule.as_ref().or_panic().upcoming(Utc).next() else {
                         error!("Could not get next execution time for cron schedule");
