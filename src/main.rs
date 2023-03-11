@@ -52,6 +52,7 @@ async fn main() -> Result<()> {
             let task = task::spawn(async move {
                 let shared_params = Arc::clone(&params);
                 loop {
+                    // we checked that the schedule exists above, so we can unwrap it
                     let Some(deadline) = shared_params.schedule.as_ref().or_panic().upcoming(Utc).next() else {
                         error!("Could not get next execution time for cron schedule");
                         return;
