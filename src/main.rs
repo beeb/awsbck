@@ -57,15 +57,20 @@ async fn main() -> Result<()> {
                         return;
                     };
                     info!("Next backup scheduled for {}", deadline.to_rfc2822());
+                    // tokio's sleep_until` expect an `Instant` and not a Utc::DateTime, let's convert.
+                    // first we get the duration between now and the deadline
                     let Ok(wait_time) = (deadline - Utc::now()).to_std() else {
                         error!("Could not convert duration to std Duration");
                         return;
                     };
+                    // then we add it to the current instant
                     let Some(deadline) = Instant::now().checked_add(wait_time) else {
                         error!("Could not convert deadline to tokio Instant");
                         return;
                     };
+                    // and finally we sleep until the next cron execution time
                     time::sleep_until(deadline).await;
+                    // run the backup
                     match backup(&shared_params).await {
                         Ok(_) => {
                             info!("Backup succeeded");
