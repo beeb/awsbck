@@ -1,9 +1,10 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, str::FromStr};
 
 use anyhow::{anyhow, Context, Result};
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::Region;
 use clap::{command, Parser};
+use cron::Schedule;
 use log::*;
 
 use crate::prelude::*;
@@ -21,11 +22,11 @@ struct Cli {
     #[arg(value_hint = clap::ValueHint::DirPath, env = "AWSBCK_FOLDER")]
     folder: PathBuf,
 
-    /// Specify an interval in seconds to run the backup periodically
+    /// Specify a cron espression to run the backup on a schedule
     ///
     /// If not specified, the backup will only run once
-    #[arg(short, long, value_name = "SECONDS", env = "AWSBCK_INTERVAL")]
-    interval: Option<u64>,
+    #[arg(short, long, value_name = "EXPR", env = "AWSBCK_CRON")]
+    cron: Option<String>,
 
     /// The name of the archive that will be uploaded to S3, without extension (optional)
     #[arg(short, long, value_name = "NAME", env = "AWSBCK_FILENAME")]
@@ -68,8 +69,8 @@ struct Cli {
 pub(crate) struct Params {
     /// Which folder to backup
     pub(crate) folder: PathBuf,
-    /// An optional interval duration in seconds
-    pub(crate) interval: Option<u64>,
+    /// An optional schedule to run the backup on
+    pub(crate) schedule: Option<Schedule>,
     /// The optional name of the archive that will be uploaded to S3 (without extension)
     pub(crate) filename: Option<String>,
     /// The AWS S3 region, defaults to us-east-1
@@ -86,6 +87,14 @@ pub(crate) struct Params {
 pub(crate) async fn parse_config() -> Result<Params> {
     // Read from the command-line args, and if not present, check environment variables
     let params = Cli::parse();
+
+    let schedule = params
+        .cron
+        .map(|cron| {
+            Schedule::from_str(&cron)
+                .with_context(|| anyhow!("Could not parse cron expression '{}'", cron))
+        })
+        .transpose()?;
 
     // make sure folder exists
     let folder = params
@@ -108,7 +117,7 @@ pub(crate) async fn parse_config() -> Result<Params> {
 
     Ok(Params {
         folder,
-        interval: params.interval,
+        schedule,
         filename,
         aws_region,
         aws_bucket: params.aws_bucket,
