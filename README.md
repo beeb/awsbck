@@ -45,6 +45,8 @@ Options:
 
 CLI arguments take precedence over environment variables.
 
+The cron expression is parsed by the [`cron`](https://github.com/zslayton/cron) crate, the first item describes seconds.
+
 The `--filename` option accepts ASCII alphanumeric characters and `!-_.*'()/`. Other characters will be discarded.
 
 ### Example
