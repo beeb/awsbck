@@ -45,7 +45,12 @@ Options:
 
 CLI arguments take precedence over environment variables.
 
-The cron expression is parsed by the [`cron`](https://github.com/zslayton/cron) crate, the first item describes seconds.
+The cron expression is parsed by the [`cron`](https://github.com/zslayton/cron) crate, with the following format:
+
+```rust
+//                sec, min, hour,   day of month, month,  day of week, year
+let expression = "0    30   9,12,15 1,15          May-Aug Mon,Wed,Fri  2018/2";
+```
 
 The `--filename` option accepts ASCII alphanumeric characters and `!-_.*'()/`. Other characters will be discarded.
 
