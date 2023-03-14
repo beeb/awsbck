@@ -45,7 +45,8 @@ Options:
 
 CLI arguments take precedence over environment variables.
 
-The cron expression is parsed by the [`cron`](https://github.com/zslayton/cron) crate, with the following format:
+The cron expression is parsed by the [`cron`](https://github.com/zslayton/cron) crate, with the following format (year
+is optional):
 
 ```rust
 //                sec, min, hour,   day of month, month,  day of week, year
