@@ -3,11 +3,13 @@ name: Docker
 on:
   workflow_dispatch:
 
+permissions:
+  packages: write
+
 jobs:
   docker-build:
     name: Docker
     runs-on: ubuntu-latest
-    environment: Docker
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2
@@ -35,16 +37,17 @@ jobs:
           echo "minor=$MINOR" >> $GITHUB_OUTPUT
           REVISION=`echo $REVISION | cut -d. -f3`
           echo "revision=$REVISION" >> $GITHUB_OUTPUT
-      - name: Login to Docker Hub
+      - name: Login to Registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: vbersier/awsbck
+          images: ghcr.io/${{ github.repository_owner }}/awsbck
           flavor: |
             latest=true
           tags: |
@@ -63,7 +66,7 @@ jobs:
         id: meta-root
         uses: docker/metadata-action@v4
         with:
-          images: vbersier/awsbck
+          images: ghcr.io/${{ github.repository_owner }}/awsbck
           flavor: |
             latest=false
           tags: |
