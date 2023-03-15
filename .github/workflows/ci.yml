@@ -125,7 +125,8 @@ jobs:
     needs: [build-linux, build-arm]
     name: Create docker container
     runs-on: ubuntu-latest
-    environment: Docker
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2
@@ -142,16 +143,17 @@ jobs:
         with:
           name: awsbck-armv7
           path: linux_arm/awsbck
-      - name: Login to Docker Hub
+      - name: Login to Registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker metadata # generates tags (version number and "latest") and labels
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: vbersier/awsbck
+          images: ghcr.io/${{ github.repository_owner }}/awsbck
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -167,7 +169,7 @@ jobs:
         id: meta-root
         uses: docker/metadata-action@v4
         with:
-          images: vbersier/awsbck
+          images: ghcr.io/${{ github.repository_owner }}/awsbck
           flavor: |
             latest=false
           tags: |
