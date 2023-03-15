@@ -43,25 +43,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Docker metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/awsbck
-          flavor: |
-            latest=true
-          tags: |
-            type=raw,value=${{steps.semver.outputs.major}},enable=${{ steps.semver.outputs.major != '0' }}
-            type=raw,value=${{steps.semver.outputs.major}}.${{steps.semver.outputs.minor}}
-            type=raw,value=${{steps.semver.outputs.version}}
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          context: .
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
       - name: Docker metadata root
         id: meta-root
         uses: docker/metadata-action@v4
@@ -82,4 +63,23 @@ jobs:
           file: Dockerfile.root
           tags: ${{ steps.meta-root.outputs.tags }}
           labels: ${{ steps.meta-root.outputs.labels }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/awsbck
+          flavor: |
+            latest=true
+          tags: |
+            type=raw,value=${{steps.semver.outputs.major}},enable=${{ steps.semver.outputs.major != '0' }}
+            type=raw,value=${{steps.semver.outputs.major}}.${{steps.semver.outputs.minor}}
+            type=raw,value=${{steps.semver.outputs.version}}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: .
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
