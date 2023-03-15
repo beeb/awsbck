@@ -3,7 +3,6 @@
 <p align="center">
   <a href="https://github.com/beeb/awsbck-rs/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/beeb/awsbck-rs/ci.yml?style=flat-square" /></a>
   <a href="https://crates.io/crates/awsbck"><img src="https://img.shields.io/crates/v/awsbck.svg?style=flat-square" /></a>
-  <a href="https://hub.docker.com/r/vbersier/awsbck"><img src="https://img.shields.io/docker/image-size/vbersier/awsbck/latest?style=flat-square" /></a>
   <a href="https://github.com/beeb/awsbck-rs/blob/main/LICENSE-MIT"><img src="https://img.shields.io/crates/l/awsbck.svg?style=flat-square" /></a>
 </p>
 
@@ -77,7 +76,7 @@ $ docker run \
   --rm \
   --mount type=bind,src="$(pwd)"/target,dst=/target,readonly \
   -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
-  vbersier/awsbck:latest \
+  ghcr.io/beeb/awsbck:latest \
   -c "15 */10 * * * *" -b my_bucket /target
 ```
 
@@ -95,7 +94,8 @@ $ cargo install awsbck
 
 ### Docker
 
-This utility is available as a [docker image `vbersier/awsbck`](https://hub.docker.com/r/vbersier/awsbck).
+This utility is available as a
+[docker image `ghcr.io/beeb/awsbck`](https://github.com/beeb/awsbck/pkgs/container/awsbck).
 
 There are two tag variants, one running as a non-root user (`latest`) and one as a root user (`root-latest`).
 
@@ -144,7 +144,7 @@ services:
       ]
   # we mount the backup volume as read-only and back up the SQL dump daily at 3.12am
   awsbck:
-    image: vbersier/awsbck:latest
+    image: ghcr.io/beeb/awsbck:latest
     restart: unless-stopped
     volumes:
       - type: volume
