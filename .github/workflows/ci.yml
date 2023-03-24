@@ -8,10 +8,6 @@ on:
       - 'v*.*.*'
   pull_request:
 
-env:
-  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
-  CARGO_INCREMENTAL: '0'
-
 jobs:
   lint:
     runs-on: ubuntu-latest
