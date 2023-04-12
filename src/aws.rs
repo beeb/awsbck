@@ -6,9 +6,9 @@ use std::{env, fs::File, path::Path};
 
 use anyhow::{anyhow, Result};
 use aws_sdk_s3::{
-    model::{CompletedMultipartUpload, CompletedPart},
-    output::CreateMultipartUploadOutput,
-    types::ByteStream,
+    operation::create_multipart_upload::CreateMultipartUploadOutput,
+    primitives::ByteStream,
+    types::{CompletedMultipartUpload, CompletedPart},
     Client,
 };
 use aws_smithy_http::byte_stream::Length;
