@@ -1,9 +1,9 @@
 <h1 align="center">awsbck</h1>
 
 <p align="center">
-  <a href="https://github.com/beeb/awsbck-rs/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/beeb/awsbck-rs/ci.yml?style=flat-square" /></a>
+  <a href="https://github.com/beeb/awsbck/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/beeb/awsbck/ci.yml?style=flat-square" /></a>
   <a href="https://crates.io/crates/awsbck"><img src="https://img.shields.io/crates/v/awsbck.svg?style=flat-square" /></a>
-  <a href="https://github.com/beeb/awsbck-rs/blob/main/LICENSE-MIT"><img src="https://img.shields.io/crates/l/awsbck.svg?style=flat-square" /></a>
+  <a href="https://github.com/beeb/awsbck/blob/main/LICENSE-MIT"><img src="https://img.shields.io/crates/l/awsbck.svg?style=flat-square" /></a>
 </p>
 
 <p align="center">
@@ -84,7 +84,7 @@ $ docker run \
 
 ### Prebuilt binaries
 
-Check out [the releases](https://github.com/beeb/awsbck-rs/releases) for prebuilt binaries.
+Check out [the releases](https://github.com/beeb/awsbck/releases) for prebuilt binaries.
 
 ### Cargo
 
