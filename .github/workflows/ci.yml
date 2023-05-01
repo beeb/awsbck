@@ -224,3 +224,29 @@ jobs:
           files: |
             release/*.tar.gz
             release/*.zip
+
+  changelog:
+    if: github.ref == 'refs/heads/main'
+    name: Generate changelog
+    runs-on: [self-hosted, linux]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: orhun/git-cliff-action@v2
+        id: git-cliff
+        with:
+          config: cliff.toml
+        env:
+          OUTPUT: CHANGELOG.md
+      - name: Print changelog
+        run: cat "./CHANGELOG.md"
+      - name: commit changelog
+        run: |
+          git config --global user.name 'beeb'
+          git config --global user.email 'vbersier@gmail.com'
+          git commit -am "chore: update changelog"
+          git push
