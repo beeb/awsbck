@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - Runner
 
+### Miscellaneous Tasks
+
+- Add changelog file
+
 ### Ci
 
 - Generate changelog automatically
