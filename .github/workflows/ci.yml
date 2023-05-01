@@ -228,7 +228,7 @@ jobs:
   changelog:
     if: github.ref == 'refs/heads/main'
     name: Generate changelog
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
