@@ -11,10 +11,17 @@ All notable changes to this project will be documented in this file.
 ### Miscellaneous Tasks
 
 - Add changelog file
+- Update changelog
+- Update deps
 
 ### Ci
 
 - Generate changelog automatically
+- Add macos-aarch64 build target
+- Revert macOS aarch64 because it doesn't work
+- Try to cross-compile for apple silicon
+- Freeze xcode version
+- Fix release dependencies
 
 ## [0.3.1] - 2023-04-12
 
