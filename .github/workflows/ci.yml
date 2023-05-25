@@ -210,7 +210,7 @@ jobs:
 
   make-release:
     if: github.ref_type == 'tag'
-    needs: [build-linux, build-arm, build-windows, build-macos]
+    needs: [build-linux, build-arm, build-windows, build-macos, build-macos-arm]
     name: Create Github release
     runs-on: ubuntu-latest
     environment: Cargo
