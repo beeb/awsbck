@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.3.2] - 2023-05-25
 
 ### Bug Fixes
 
@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - Add changelog file
 - Update changelog
 - Update deps
+- Update changelog
+- Bump patch number
 
 ### Ci
 
