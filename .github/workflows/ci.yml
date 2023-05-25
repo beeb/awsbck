@@ -69,6 +69,32 @@ jobs:
           name: awsbck-macos
           path: target/release/awsbck
 
+  build-macos-arm:
+    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
+    needs: [lint, tests]
+    runs-on: macos-latest
+    name: Release build for macOS aarch64
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.2'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@v3
+      - name: Build release binary
+        run: |
+          SDKROOT=$(xcrun -sdk macosx13.1 --show-sdk-path) \
+          MACOS_DEPLOYMENT_TARGET=$(xcrun -sdk macosx13.1 --show-sdk-platform-version) \
+          cargo build --release --target=aarch64-apple-darwin
+        env:
+          LZMA_API_STATIC: 'true'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: awsbck-macos-aarch64
+          path: target/aarch64-apple-darwin/release/awsbck
+
   build-linux:
     if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
     needs: [lint, tests]
@@ -184,7 +210,7 @@ jobs:
 
   make-release:
     if: github.ref_type == 'tag'
-    needs: [build-linux, build-arm, build-windows, build-macos]
+    needs: [build-linux, build-arm, build-windows, build-macos, build-macos-arm]
     name: Create Github release
     runs-on: ubuntu-latest
     environment: Cargo
@@ -216,6 +242,7 @@ jobs:
           tar -C ./artifacts/awsbck-armv7 -czvf ./release/awsbck-v${{ steps.version.outputs.value }}-linux-armv7.tar.gz awsbck
           zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-windows.zip ./artifacts/awsbck-windows/awsbck.exe
           zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-macos.zip ./artifacts/awsbck-macos/awsbck
+          zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-macos-aarch64.zip ./artifacts/awsbck-macos-aarch64/awsbck
       - name: release
         uses: softprops/action-gh-release@v1
         with:
