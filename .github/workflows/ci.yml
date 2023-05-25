@@ -69,24 +69,6 @@ jobs:
           name: awsbck-macos
           path: target/release/awsbck
 
-  build-macos-arm:
-    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
-    needs: [lint, tests]
-    name: Release build for macOS ARM
-    runs-on: ubuntu-latest
-    steps:
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo install cross --git https://github.com/cross-rs/cross
-      - uses: actions/checkout@v3
-      - run: cross build --release --target aarch64-apple-darwin
-      - uses: actions/upload-artifact@v3
-        with:
-          name: awsbck-macos-aarch64
-          path: target/aarch64-apple-darwin/release/awsbck
-
   build-linux:
     if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
     needs: [lint, tests]
@@ -202,7 +184,7 @@ jobs:
 
   make-release:
     if: github.ref_type == 'tag'
-    needs: [build-linux, build-arm, build-windows, build-macos, build-macos-arm]
+    needs: [build-linux, build-arm, build-windows, build-macos]
     name: Create Github release
     runs-on: ubuntu-latest
     environment: Cargo
@@ -234,7 +216,6 @@ jobs:
           tar -C ./artifacts/awsbck-armv7 -czvf ./release/awsbck-v${{ steps.version.outputs.value }}-linux-armv7.tar.gz awsbck
           zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-windows.zip ./artifacts/awsbck-windows/awsbck.exe
           zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-macos.zip ./artifacts/awsbck-macos/awsbck
-          zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-macos-aarch64.zip ./artifacts/awsbck-macos-aarch64/awsbck
       - name: release
         uses: softprops/action-gh-release@v1
         with:
