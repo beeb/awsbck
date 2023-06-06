@@ -5,11 +5,11 @@ use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::config::Region;
 use clap::{command, Parser};
 use cron::Schedule;
-use log::*;
+use log::info;
 
 use crate::prelude::*;
 
-/// https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+/// <https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html>
 const VALID_FILENAME_CHARS: &str = "!-_.*'()/"; // plus alphanumeric
 
 /// CLI Parser uses `clap`.

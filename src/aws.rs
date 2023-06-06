@@ -12,14 +12,14 @@ use aws_sdk_s3::{
     Client,
 };
 use aws_smithy_http::byte_stream::Length;
-use log::*;
+use log::{info, warn};
 
 use crate::{
     backup::Archive,
     config::{sanitize_filename, Params},
 };
 
-/// In bytes, minimum chunk size of 5MB. Increase CHUNK_SIZE to send larger chunks.
+/// In bytes, minimum chunk size of 5MB. Increase [`CHUNK_SIZE`] to send larger chunks.
 const CHUNK_SIZE: u64 = 1024 * 1024 * 5;
 const MAX_CHUNKS: u64 = 10000;
 
@@ -36,27 +36,25 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
     // we set this special environment variable when doing e2e testing
     if env::var("AWSBCK_TESTING_E2E").is_ok() {
         warn!("Endpoint URL was changed to localhost while in testing environment.");
-        shared_config_builder = shared_config_builder.endpoint_url("http://127.0.0.1:9090")
+        shared_config_builder = shared_config_builder.endpoint_url("http://127.0.0.1:9090");
     }
     let shared_config = shared_config_builder.load().await;
     let client = Client::new(&shared_config);
     // if the desired filename was specified, append the file extension in case it was not already provided
-    let filename = params
-        .filename
-        .clone()
-        .map(|f| match f {
+    let filename = params.filename.clone().map_or_else(
+        || {
+            // default filename is awsbck_ + the folder name + .tar.gz
+            let sanitized_folder_name =
+                params.folder.file_name().map_or("backup".to_string(), |f| {
+                    sanitize_filename(f.to_string_lossy().to_string())
+                });
+            format!("awsbck_{sanitized_folder_name}.tar.gz")
+        },
+        |f| match f {
             f if !f.ends_with(".tar.gz") => format!("{f}.tar.gz"),
             f => f,
-        })
-        .unwrap_or_else(|| {
-            // default filename is awsbck_ + the folder name + .tar.gz
-            let sanitized_folder_name = params
-                .folder
-                .file_name()
-                .map(|f| sanitize_filename(f.to_string_lossy().to_string()))
-                .unwrap_or("backup".to_string());
-            format!("awsbck_{sanitized_folder_name}.tar.gz")
-        });
+        },
+    );
     let multipart_upload_res: CreateMultipartUploadOutput = client
         .create_multipart_upload()
         .bucket(&params.aws_bucket)
@@ -100,6 +98,7 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
             .await?;
 
         // this should be a uint but somehow the API expects an i32 (which starts at 1)
+        #[allow(clippy::cast_possible_truncation)] // between 1 and 10_000
         let part_number = (chunk_index as i32) + 1;
 
         // send chunk and record the ETag and part number
