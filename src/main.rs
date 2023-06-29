@@ -1,5 +1,6 @@
 //! Utility to backup a folder to AWS S3, once or periodically.
 #![warn(missing_docs)]
+#![warn(clippy::pedantic)]
 #![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]
 
@@ -8,7 +9,7 @@ use std::{env, sync::Arc};
 use anyhow::{anyhow, Context, Result};
 use chrono::Utc;
 use dotenvy::dotenv;
-use log::*;
+use log::{error, info};
 use tokio::{
     task,
     time::{self, Instant},
