@@ -2,7 +2,7 @@
 name = "awsbck"
 version = "0.3.2"
 edition = "2021"
-authors = ["Valentin Bersier <vbersier@gmail.com>"]
+authors = ["Valentin Bersier <hi@beeb.li>"]
 license = "MIT OR Apache-2.0"
 description = "Utility to backup a folder to AWS S3, once or periodically."
 repository = "https://github.com/beeb/awsbck"
