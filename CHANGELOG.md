@@ -10,14 +10,11 @@ All notable changes to this project will be documented in this file.
 
 ### Miscellaneous Tasks
 
-- Update changelog
 - Update deps
 - Update dependencies
 - Update email
 - Update deps
-- Update changelog
 - Update deps
-- Update changelog
 
 ### Refactor
 
@@ -30,6 +27,7 @@ All notable changes to this project will be documented in this file.
 ### Ci
 
 - Change commit email
+- Ignore changelog commits
 
 ## [0.3.2] - 2023-05-25
 
@@ -40,9 +38,7 @@ All notable changes to this project will be documented in this file.
 ### Miscellaneous Tasks
 
 - Add changelog file
-- Update changelog
 - Update deps
-- Update changelog
 - Bump patch number
 
 ### Ci
