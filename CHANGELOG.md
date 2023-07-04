@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Update deps
 - Update changelog
 - Update deps
+- Update changelog
 
 ### Refactor
 
@@ -25,6 +26,10 @@ All notable changes to this project will be documented in this file.
 ### Build
 
 - Add flake for dev shell
+
+### Ci
+
+- Change commit email
 
 ## [0.3.2] - 2023-05-25
 
