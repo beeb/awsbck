@@ -92,6 +92,14 @@ Check out [the releases](https://github.com/beeb/awsbck/releases) for prebuilt b
 $ cargo install awsbck
 ```
 
+### Nix
+
+Available through nixpkgs on the unstable channel.
+
+```shell
+$ nix-env -iA nixpkgs.awsbck
+```
+
 ### Docker
 
 This utility is available as a
