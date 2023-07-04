@@ -274,6 +274,6 @@ jobs:
       - name: commit changelog
         run: |
           git config --global user.name 'beeb'
-          git config --global user.email 'vbersier@gmail.com'
+          git config --global user.email '703631+beeb@users.noreply.github.com'
           git commit -am "chore: update changelog"
           git push
