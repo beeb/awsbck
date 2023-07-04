@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### Build System
+
+- Add flake for dev shell
+
+### CI Workflows
+
+- Change commit email
+- Ignore changelog commits
+- Categorize ci and build commits
+
 ### Documentation
 
 - Readme
@@ -20,28 +30,13 @@ All notable changes to this project will be documented in this file.
 
 - Add clippy pedantic rules and fix warns
 
-### Build
-
-- Add flake for dev shell
-
-### Ci
-
-- Change commit email
-- Ignore changelog commits
-
 ## [0.3.2] - 2023-05-25
 
 ### Bug Fixes
 
 - Runner
 
-### Miscellaneous Tasks
-
-- Add changelog file
-- Update deps
-- Bump patch number
-
-### Ci
+### CI Workflows
 
 - Generate changelog automatically
 - Add macos-aarch64 build target
@@ -50,7 +45,21 @@ All notable changes to this project will be documented in this file.
 - Freeze xcode version
 - Fix release dependencies
 
+### Miscellaneous Tasks
+
+- Add changelog file
+- Update deps
+- Bump patch number
+
 ## [0.3.1] - 2023-04-12
+
+### CI Workflows
+
+- Disable incremental builds
+- Github registry for docker
+- Update docker to ghcr.io
+- Invert order of images push
+- Remove env vars as they are defined by the toolchain action
 
 ### Documentation
 
@@ -65,15 +74,16 @@ All notable changes to this project will be documented in this file.
 - Update dependencies and fix use statements
 - Bump patch number
 
-### Ci
-
-- Disable incremental builds
-- Github registry for docker
-- Update docker to ghcr.io
-- Invert order of images push
-- Remove env vars as they are defined by the toolchain action
-
 ## [0.3.0] - 2023-03-11
+
+### CI Workflows
+
+- Directly publish release
+- Disable failing task
+- Test to add permissions
+- Restrict permissions
+- Restore cron
+- Use new sparse protocol for cargo
 
 ### Documentation
 
@@ -104,15 +114,6 @@ All notable changes to this project will be documented in this file.
 
 - Check cron backup
 
-### Ci
-
-- Directly publish release
-- Disable failing task
-- Test to add permissions
-- Restrict permissions
-- Restore cron
-- Use new sparse protocol for cargo
-
 ## [0.2.11] - 2023-02-11
 
 ### Bug Fixes
@@ -128,6 +129,10 @@ All notable changes to this project will be documented in this file.
 - Folder name sanitation
 
 ## [0.2.10] - 2023-02-11
+
+### CI Workflows
+
+- Make sure lockfile was updated
 
 ### Documentation
 
@@ -155,10 +160,6 @@ All notable changes to this project will be documented in this file.
 - Safer value for filesize
 - Refactor size check
 
-### Ci
-
-- Make sure lockfile was updated
-
 ### Wip
 
 - E2e test
@@ -179,6 +180,14 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.8] - 2023-02-09
 
+### Build System
+
+- Simplify dockerfile
+
+### CI Workflows
+
+- Remove redundant matrix def
+
 ### Documentation
 
 - Update docker-compose example
@@ -192,19 +201,16 @@ All notable changes to this project will be documented in this file.
 
 - New struct for Archive
 
-### Build
-
-- Simplify dockerfile
-
-### Ci
-
-- Remove redundant matrix def
-
 ## [0.2.7] - 2023-02-09
 
 ### Bug Fixes
 
 - Add apostrophe as valid char
+
+### CI Workflows
+
+- Run tests on PR and release
+- Only build if tests pass
 
 ### Documentation
 
@@ -225,11 +231,6 @@ All notable changes to this project will be documented in this file.
 
 - Filename sanitize
 
-### Ci
-
-- Run tests on PR and release
-- Only build if tests pass
-
 ## [0.2.6] - 2023-02-09
 
 ### Bug Fixes
@@ -237,6 +238,16 @@ All notable changes to this project will be documented in this file.
 - Image name in CI
 - Better ctrl-c handling
 - Better ctrl-c handling
+
+### Build System
+
+- Fix docker file permissions
+- Fix user in dockerfile
+- Add root version of docker container
+
+### CI Workflows
+
+- Add root docker image to release workflow
 
 ### Documentation
 
@@ -256,17 +267,16 @@ All notable changes to this project will be documented in this file.
 
 - Docker workflow
 
-### Build
-
-- Fix docker file permissions
-- Fix user in dockerfile
-- Add root version of docker container
-
-### Ci
-
-- Add root docker image to release workflow
-
 ## [0.2.5] - 2023-02-08
+
+### Build System
+
+- Root in docker
+
+### CI Workflows
+
+- Rename workflow
+- Rename workflow
 
 ### Documentation
 
@@ -282,30 +292,13 @@ All notable changes to this project will be documented in this file.
 
 - Bump version number
 
-### Build
-
-- Root in docker
-
-### Ci
-
-- Rename workflow
-- Rename workflow
-
 ## [0.2.4] - 2023-02-08
 
-### Documentation
-
-- Readme
-
-### Miscellaneous Tasks
-
-- Bump patch number
-
-### Build
+### Build System
 
 - Remove unused dependencies, enable thin LTO
 
-### Ci
+### CI Workflows
 
 - Add linting
 - Combine all checks into 1 job
@@ -319,6 +312,14 @@ All notable changes to this project will be documented in this file.
 - Fix path to armv7 binary
 - Add publish to crates.io
 - Fix crates.io publish
+
+### Documentation
+
+- Readme
+
+### Miscellaneous Tasks
+
+- Bump patch number
 
 ## [0.2.3] - 2023-02-08
 
@@ -363,6 +364,11 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.0] - 2023-02-08
 
+### Build System
+
+- Allow unused
+- Add package metadata
+
 ### Documentation
 
 - Add readme
@@ -398,11 +404,6 @@ All notable changes to this project will be documented in this file.
 ### Testing
 
 - Add test to list directory
-
-### Build
-
-- Allow unused
-- Add package metadata
 
 ### Wip
 
