@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### Documentation
+
+- Readme
+
 ### Miscellaneous Tasks
 
 - Update changelog
@@ -11,10 +15,16 @@ All notable changes to this project will be documented in this file.
 - Update dependencies
 - Update email
 - Update deps
+- Update changelog
+- Update deps
 
 ### Refactor
 
 - Add clippy pedantic rules and fix warns
+
+### Build
+
+- Add flake for dev shell
 
 ## [0.3.2] - 2023-05-25
 
