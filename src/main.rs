@@ -10,7 +10,6 @@ use anyhow::{anyhow, Context, Result};
 use chrono::Utc;
 use dotenvy::dotenv;
 use log::{error, info};
-use smol::prelude::*;
 use tokio::{
     task,
     time::{self, Instant},
