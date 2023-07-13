@@ -14,7 +14,8 @@ jobs:
     name: Check
     steps:
       - uses: dtolnay/rust-toolchain@stable
-        components: rustfmt, clippy
+        with:
+          components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
       - uses: actions/checkout@v3
       - run: |
