@@ -14,10 +14,10 @@ jobs:
     name: Check
     steps:
       - uses: dtolnay/rust-toolchain@stable
+        components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
       - uses: actions/checkout@v3
       - run: |
-          rustup component add rustfmt clippy
           cargo check --locked
           cargo fmt --all -- --check
           cargo clippy -- -Dwarnings
