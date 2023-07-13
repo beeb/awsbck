@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### Miscellaneous Tasks
+
+- Bump version number
+
+## [0.3.3] - 2023-07-13
+
 ### Build System
 
 - Add flake for dev shell
