@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - Change commit email
 - Ignore changelog commits
 - Categorize ci and build commits
+- Use action to install rustfmt and clippy
+- Fix format
 
 ### Documentation
 
@@ -25,6 +27,8 @@ All notable changes to this project will be documented in this file.
 - Update email
 - Update deps
 - Update deps
+- Update dependencies
+- Remove unused dependency
 
 ### Refactor
 
