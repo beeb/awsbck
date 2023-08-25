@@ -44,5 +44,23 @@
           RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
           LD_LIBRARY_PATH = lib.makeLibraryPath [ ];
         };
+
+        packages.default = pkgs.rustPlatform.buildRustPackage {
+          pname = "awsbck";
+          inherit ((lib.importTOML ./Cargo.toml).package) version;
+
+          src = lib.cleanSource ./.;
+
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+            allowBuiltinFetchGit = true;
+          };
+
+          nativeBuildInputs = [ pkgs.installShellFiles ];
+
+          buildInputs = lib.optionals pkgs.stdenv.isDarwin [ pkgs.darwin.apple_sdk.frameworks.Security ];
+
+          doCheck = false;
+        };
       });
 }
