@@ -6,13 +6,19 @@ All notable changes to this project will be documented in this file.
 
 ### Miscellaneous Tasks
 
-- Bump version number
+- Update flake
+- Update dependencies
+
+### Styling
+
+- Cargo fmt
 
 ## [0.3.3] - 2023-07-13
 
 ### Build System
 
 - Add flake for dev shell
+- Add package build definition in nix file
 
 ### CI Workflows
 
@@ -35,6 +41,7 @@ All notable changes to this project will be documented in this file.
 - Update deps
 - Update dependencies
 - Remove unused dependency
+- Bump version number
 
 ### Refactor
 
