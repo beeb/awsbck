@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Update flake
 - Update dependencies
 - Bump patch number
+- Update dependencies
 
 ### Styling
 
