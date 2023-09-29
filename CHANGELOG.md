@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### Build System
+
+- Bump actions/checkout from 3 to 4
+- Bump robinraju/release-downloader from 1.7 to 1.8
+- Bump docker/metadata-action from 4 to 5
+- Bump docker/setup-buildx-action from 2 to 3
+- Bump docker/setup-qemu-action from 2 to 3
+
+### CI Workflows
+
+- Add release-plz
+- Fix missing secret
+
+### Miscellaneous Tasks
+
+- Update aws sdk
+
+## [0.3.4] - 2023-08-27
+
 ### Miscellaneous Tasks
 
 - Update flake
