@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build release binary
         run: cargo build --release
         env:
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build release binary
         run: cargo build --release
         env:
@@ -48,7 +48,7 @@ jobs:
         with:
           targets: aarch64-apple-darwin
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build release binary
         run: |
           SDKROOT=$(xcrun -sdk macosx13.1 --show-sdk-path) \
@@ -73,7 +73,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends musl-tools
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build release binary
         run: cargo build --release --target x86_64-unknown-linux-musl
       - uses: actions/upload-artifact@v3
@@ -97,7 +97,7 @@ jobs:
           targets: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v2
       - run: cargo install cross --git https://github.com/cross-rs/cross
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: cross build --release --target ${{ matrix.target }}
       - uses: actions/upload-artifact@v3
         with:
@@ -111,7 +111,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: docker/setup-qemu-action@v2
       - uses: docker/setup-buildx-action@v2
       - uses: actions/download-artifact@v3
@@ -176,7 +176,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - name: extract version from Cargo.toml
         uses: SebRollen/toml-action@v1.0.2
