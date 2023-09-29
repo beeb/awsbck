@@ -134,7 +134,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker metadata for root image
         id: meta-root
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository_owner }}/awsbck
           flavor: |
@@ -154,7 +154,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
       - name: Docker metadata # generates tags (version number and "latest") and labels
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository_owner }}/awsbck
           tags: |
