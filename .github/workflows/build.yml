@@ -1,42 +1,11 @@
-name: CI
+name: Release builds
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*.*.*'
-  pull_request:
+  release:
+    types: [published]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    name: Check
-    steps:
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
-      - run: |
-          cargo check --locked
-          cargo fmt --all -- --check
-          cargo clippy -- -Dwarnings
-
-  tests:
-    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
-    needs: lint
-    runs-on: ubuntu-latest
-    name: Tests
-    steps:
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
-      - run: cargo test
-
   build-windows:
-    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
-    needs: [lint, tests]
     runs-on: windows-latest
     name: Release build for Windows
     steps:
@@ -53,8 +22,6 @@ jobs:
           path: target/release/awsbck.exe
 
   build-macos:
-    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
-    needs: [lint, tests]
     runs-on: macos-latest
     name: Release build for macOS
     steps:
@@ -71,8 +38,6 @@ jobs:
           path: target/release/awsbck
 
   build-macos-arm:
-    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
-    needs: [lint, tests]
     runs-on: macos-latest
     name: Release build for macOS aarch64
     steps:
@@ -97,8 +62,6 @@ jobs:
           path: target/aarch64-apple-darwin/release/awsbck
 
   build-linux:
-    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
-    needs: [lint, tests]
     runs-on: ubuntu-latest
     name: Release build for linux x86_64
     steps:
@@ -119,8 +82,6 @@ jobs:
           path: target/x86_64-unknown-linux-musl/release/awsbck
 
   build-arm:
-    if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/pull/')
-    needs: [lint, tests]
     name: Release builds for linux ARM
     runs-on: ubuntu-latest
     strategy:
@@ -144,7 +105,6 @@ jobs:
           path: target/${{ matrix.target }}/release/awsbck
 
   build-docker:
-    if: github.ref_type == 'tag'
     needs: [build-linux, build-arm]
     name: Create docker container
     runs-on: ubuntu-latest
@@ -209,21 +169,15 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
 
-  make-release:
-    if: github.ref_type == 'tag'
+  update-release:
     needs: [build-linux, build-arm, build-windows, build-macos, build-macos-arm]
-    name: Create Github release
+    name: Update GitHub release
     runs-on: ubuntu-latest
-    environment: Cargo
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
-      - name: publish to crates.io
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
-        run: cargo publish
       - name: extract version from Cargo.toml
         uses: SebRollen/toml-action@v1.0.2
         id: version
@@ -244,37 +198,39 @@ jobs:
           zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-windows.zip ./artifacts/awsbck-windows/awsbck.exe
           zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-macos.zip ./artifacts/awsbck-macos/awsbck
           zip -j ./release/awsbck-v${{ steps.version.outputs.value }}-macos-aarch64.zip ./artifacts/awsbck-macos-aarch64/awsbck
-      - name: release
-        uses: softprops/action-gh-release@v1
+      - name: upload linux-x64 to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: awsbck v${{ steps.version.outputs.value }}
-          generate_release_notes: true
-          files: |
-            release/*.tar.gz
-            release/*.zip
-
-  changelog:
-    if: github.ref == 'refs/heads/main'
-    name: Generate changelog
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v3
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: release/awsbck-v${{ steps.version.outputs.value }}-linux-x64.tar.gz
+          tag: ${{ github.ref }}
+      - name: upload linux-aarch64 to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          ref: main
-          fetch-depth: 0
-      - uses: orhun/git-cliff-action@v2
-        id: git-cliff
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: release/awsbck-v${{ steps.version.outputs.value }}-linux-aarch64.tar.gz
+          tag: ${{ github.ref }}
+      - name: upload linux-armv7 to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          config: cliff.toml
-        env:
-          OUTPUT: CHANGELOG.md
-      - name: Print changelog
-        run: cat "./CHANGELOG.md"
-      - name: commit changelog
-        run: |
-          git config --global user.name 'beeb'
-          git config --global user.email '703631+beeb@users.noreply.github.com'
-          git commit -am "chore: update changelog"
-          git push
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: release/awsbck-v${{ steps.version.outputs.value }}-linux-armv7.tar.gz
+          tag: ${{ github.ref }}
+      - name: upload windows to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: release/awsbck-v${{ steps.version.outputs.value }}-windows.zip
+          tag: ${{ github.ref }}
+      - name: upload macos to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: release/awsbck-v${{ steps.version.outputs.value }}-macos.zip
+          tag: ${{ github.ref }}
+      - name: upload macos-aarch64 to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: release/awsbck-v${{ steps.version.outputs.value }}-macos-aarch64.zip
+          tag: ${{ github.ref }}
