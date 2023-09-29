@@ -13,7 +13,7 @@ categories = ["command-line-utilities", "filesystem"]
 [dependencies]
 anyhow = "1"
 aws-config = "0.56"
-aws-sdk-s3 = "0.30"
+aws-sdk-s3 = "0.31"
 aws-smithy-http = "0.56"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 clap = { version = "4", features = ["derive", "env"] }
