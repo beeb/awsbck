@@ -15,7 +15,7 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           cargo check --locked
           cargo fmt --all -- --check
@@ -29,5 +29,5 @@ jobs:
     steps:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: cargo test
