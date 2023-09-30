@@ -17,9 +17,9 @@ All notable changes to this project will be documented in this file.
 - Bump docker/metadata-action from 4 to 5
 - Bump docker/setup-buildx-action from 2 to 3
 - Bump docker/setup-qemu-action from 2 to 3
-- Update changelog
 - Update config
 - Adjust git-cliff config for release-plz compatibility
+- Adjust changelog format
 
 ### Fixed
 
@@ -33,11 +33,8 @@ All notable changes to this project will be documented in this file.
 - Update flake
 - Update dependencies
 - Cargo fmt
-- Update changelog
 - Bump patch number
-- Update changelog
 - Update dependencies
-- Update changelog
 
 ## [0.3.3] - 2023-07-13
 
@@ -49,25 +46,17 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Update changelog
 - Update deps
 - Update dependencies
 - Update email
 - Update deps
-- Update changelog
 - Update deps
-- Update changelog
 - Change commit email
-- Update changelog
 - Ignore changelog commits
-- Update changelog
 - Categorize ci and build commits
-- Update changelog
 - Update dependencies
 - Use action to install rustfmt and clippy
-- Update changelog
 - Bump version number
-- Update changelog
 
 ### Documentation
 
@@ -91,12 +80,10 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Generate changelog automatically
-- Update changelog
 - Update deps
 - Revert macOS aarch64 because it doesn't work
 - Try to cross-compile for apple silicon
 - Freeze xcode version
-- Update changelog
 - Bump patch number
 
 ### Fixed

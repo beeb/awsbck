@@ -32,6 +32,7 @@ split_commits = false
 commit_parsers = [
   { body = ".*security", group = "Security" },
   { message = "^chore: release", skip = true },
+  { message = "^chore: update changelog", skip = true },
   { message = "^.*: add", group = "Added" },
   { message = "^.*: support", group = "Added" },
   { message = "^.*: remove", group = "Removed" },
