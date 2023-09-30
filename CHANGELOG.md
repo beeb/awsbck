@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
+
 ## [Unreleased]
 
 ### Added
@@ -23,6 +24,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Fix missing secret
+- Fix changelog format
 
 ## [0.3.4] - 2023-08-27
 
