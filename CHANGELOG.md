@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.6] - 2023-10-01
+
+### Added
+
+- Add build dispatch workflow - ([b8dea71](https://github.com/beeb/awsbck/commit/b8dea71a59656c88546ee470a6350b511df69b48))
+- Add commit links in changelog - ([405d25a](https://github.com/beeb/awsbck/commit/405d25a6e768c7d6d97091662590bb3b45852f4b))
+
+### Documentation
+
+- Readme - ([974ec3d](https://github.com/beeb/awsbck/commit/974ec3d0e26d1259534aab76877188d1bf19f358))
+- Readme - ([36f7618](https://github.com/beeb/awsbck/commit/36f7618005850ff9ee94fd079624d3cf240446cf))
+
+### Fixed
+
+- Fix trigger for detecting release - ([5814aa3](https://github.com/beeb/awsbck/commit/5814aa3d6c05e0414c86ca7b808121b09c842ff1))
+- Fix release-plz release not triggering builds - ([3ecabb3](https://github.com/beeb/awsbck/commit/3ecabb35685cf52ab6025b2abab3b87bc601a70a))
+
 ## [0.3.5] - 2023-10-01
 
 ### Added
