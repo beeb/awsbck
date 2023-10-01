@@ -2,8 +2,6 @@
 header = """
 # Changelog\n
 All notable changes to this project will be documented in this file.\n
-
-## [Unreleased]
 """
 
 body = """
@@ -30,18 +28,18 @@ filter_unconventional = true
 split_commits = false
 
 commit_parsers = [
-  { body = ".*security", group = "Security" },
-  { message = "^chore: release", skip = true },
-  { message = "^chore: update changelog", skip = true },
-  { message = "^.*: add", group = "Added" },
-  { message = "^.*: support", group = "Added" },
-  { message = "^.*: remove", group = "Removed" },
-  { message = "^.*: delete", group = "Removed" },
-  { message = "^test", group = "Fixed" },
-  { message = "^fix", group = "Fixed" },
-  { message = "^doc", group = "Documentation" },
-  { message = "^.*: fix", group = "Fixed" },
-  { message = "^.*", group = "Changed" },
+    { body = ".*security", group = "Security" },
+    { message = "^chore: release", skip = true },
+    { message = "^chore: update changelog", skip = true },
+    { message = "^.*: add", group = "Added" },
+    { message = "^.*: support", group = "Added" },
+    { message = "^.*: remove", group = "Removed" },
+    { message = "^.*: delete", group = "Removed" },
+    { message = "^test", group = "Fixed" },
+    { message = "^fix", group = "Fixed" },
+    { message = "^doc", group = "Documentation" },
+    { message = "^.*: fix", group = "Fixed" },
+    { message = "^.*", group = "Changed" },
 ] # regex for parsing and grouping commits
 
 # protect breaking changes from being skipped due to matching a skipping commit_parser
