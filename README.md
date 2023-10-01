@@ -1,7 +1,7 @@
 <h1 align="center">awsbck</h1>
 
 <p align="center">
-  <a href="https://github.com/beeb/awsbck/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/beeb/awsbck/ci.yml?style=flat-square" /></a>
+  <a href="https://github.com/beeb/awsbck/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/beeb/awsbck/tests.yml?style=flat-square" /></a>
   <a href="https://crates.io/crates/awsbck"><img src="https://img.shields.io/crates/v/awsbck.svg?style=flat-square" /></a>
   <a href="https://github.com/beeb/awsbck/blob/main/LICENSE-MIT"><img src="https://img.shields.io/crates/l/awsbck.svg?style=flat-square" /></a>
 </p>
