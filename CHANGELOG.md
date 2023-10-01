@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.5] - 2023-10-01
+
+### Added
+
+- Add release-plz
+
+### Changed
+
+- Update aws sdk
+- Bump docker/metadata-action from 4 to 5
+- Bump docker/setup-buildx-action from 2 to 3
+- Bump docker/setup-qemu-action from 2 to 3
+- Update config
+- Adjust git-cliff config for release-plz compatibility
+- Adjust changelog format
+
+### Fixed
+
+- Fix missing secret
+- Fix changelog format
+- Release-plz changelog format
+
+### Removed
+
+- Remove commits for changelog updates from changelog
+
 ## [0.3.4] - 2023-08-27
 
 ### Changed
