@@ -38,7 +38,7 @@ jobs:
           REVISION=`echo $REVISION | cut -d. -f3`
           echo "revision=$REVISION" >> $GITHUB_OUTPUT
       - name: Login to Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
