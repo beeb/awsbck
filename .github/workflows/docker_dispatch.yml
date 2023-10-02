@@ -56,7 +56,7 @@ jobs:
             type=raw,value=root-${{steps.semver.outputs.version}}
             type=raw,value=root-latest
       - name: Build and push root
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           push: true
           context: .
@@ -76,7 +76,7 @@ jobs:
             type=raw,value=${{steps.semver.outputs.major}}.${{steps.semver.outputs.minor}}
             type=raw,value=${{steps.semver.outputs.version}}
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           push: true
           context: .
