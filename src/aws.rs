@@ -1,17 +1,17 @@
 //! AWS S3 upload module
 //!
 //! This was adapted from the
-//! [official examples](https://github.com/awslabs/aws-sdk-rust/blob/main/examples/s3/README.md)
+//! [official examples](https://github.com/awslabs/aws-sdk-rust/tree/main/examples/examples/s3)
 use std::{env, fs::File, path::Path};
 
 use anyhow::{anyhow, Result};
+use aws_config::BehaviorVersion;
 use aws_sdk_s3::{
     operation::create_multipart_upload::CreateMultipartUploadOutput,
-    primitives::ByteStream,
     types::{CompletedMultipartUpload, CompletedPart},
     Client,
 };
-use aws_smithy_http::byte_stream::Length;
+use aws_smithy_types::byte_stream::{ByteStream, Length};
 use log::{info, warn};
 
 use crate::{
@@ -32,7 +32,8 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
     // from the command line args
     env::set_var("AWS_ACCESS_KEY_ID", &params.aws_key_id);
     env::set_var("AWS_SECRET_ACCESS_KEY", &params.aws_key);
-    let mut shared_config_builder = aws_config::from_env().region(params.aws_region.region().await);
+    let mut shared_config_builder =
+        aws_config::defaults(BehaviorVersion::latest()).region(params.aws_region.region().await);
     // we set this special environment variable when doing e2e testing
     if env::var("AWSBCK_TESTING_E2E").is_ok() {
         warn!("Endpoint URL was changed to localhost while in testing environment.");
