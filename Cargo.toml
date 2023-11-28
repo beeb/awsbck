@@ -12,9 +12,9 @@ categories = ["command-line-utilities", "filesystem"]
 
 [dependencies]
 anyhow = "1"
-aws-config = "0.56"
-aws-sdk-s3 = "0.31"
-aws-smithy-http = "0.56"
+aws-config = "1"
+aws-sdk-s3 = "1"
+aws-smithy-http = "0.60"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 clap = { version = "4", features = ["derive", "env"] }
 cron = "0.12"
@@ -28,7 +28,7 @@ tokio = { version = "1", features = ["rt", "macros", "signal"] }
 uuid = { version = "1", features = ["v4", "fast-rng"] }
 
 [dev-dependencies]
-dockertest = "0.3.1"
+dockertest = "0.4"
 
 [profile.release]
 lto = "thin"
