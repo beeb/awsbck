@@ -80,7 +80,7 @@ async fn main() -> Result<()> {
                     time::sleep_until(deadline).await;
                     // run the backup
                     match backup(&shared_params).await {
-                        Ok(_) => {
+                        Ok(()) => {
                             info!("Backup succeeded");
                         }
                         Err(e) => {
