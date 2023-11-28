@@ -6,7 +6,6 @@ use std::{
     process::{Command, Stdio},
 };
 
-use aws_config::BehaviorVersion;
 use aws_sdk_s3::Client;
 use dockertest::{
     waitfor::{MessageSource, MessageWait},
@@ -89,7 +88,7 @@ fn e2e_test() {
         // check bucket contents
         env::set_var("AWS_ACCESS_KEY_ID", "bar");
         env::set_var("AWS_SECRET_ACCESS_KEY", "baz");
-        let shared_config = aws_config::defaults(BehaviorVersion::latest())
+        let shared_config = aws_config::from_env()
             .region("us-east-1")
             .endpoint_url("http://127.0.0.1:9090")
             .load()

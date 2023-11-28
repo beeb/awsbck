@@ -12,7 +12,7 @@ categories = ["command-line-utilities", "filesystem"]
 
 [dependencies]
 anyhow = "1"
-aws-config = "1"
+aws-config = { version = "1", features = ["behavior-version-latest"] }
 aws-sdk-s3 = "1"
 aws-smithy-types = "1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
