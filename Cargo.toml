@@ -14,7 +14,7 @@ categories = ["command-line-utilities", "filesystem"]
 anyhow = "1"
 aws-config = "1"
 aws-sdk-s3 = "1"
-aws-smithy-http = "0.60"
+aws-smithy-types = "1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 clap = { version = "4", features = ["derive", "env"] }
 cron = "0.12"
