@@ -6,7 +6,7 @@
 
 use std::{env, sync::Arc};
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result};
 use chrono::Utc;
 use dotenvy::dotenv;
 use log::{error, info};
@@ -50,42 +50,40 @@ async fn main() -> Result<()> {
                 schedule.to_string()
             );
             // spawn a routine that will run the backup periodically
-            let task = task::spawn(async move {
-                let shared_params = Arc::clone(&params);
-                loop {
-                    // we checked that the schedule exists above, so we can unwrap it
-                    let Some(deadline) = shared_params
-                        .schedule
-                        .as_ref()
-                        .or_panic()
-                        .upcoming(Utc)
-                        .next()
-                    else {
-                        error!("Could not get next execution time for cron schedule");
-                        return;
-                    };
-                    info!("Next backup scheduled for {}", deadline.to_rfc2822());
-                    // tokio's sleep_until` expect an `Instant` and not a Utc::DateTime, let's convert.
-                    // first we get the duration between now and the deadline
-                    let Ok(wait_time) = (deadline - Utc::now()).to_std() else {
-                        error!("Could not convert duration to std Duration");
-                        return;
-                    };
-                    // then we add it to the current instant
-                    let Some(deadline) = Instant::now().checked_add(wait_time) else {
-                        error!("Could not convert deadline to tokio Instant");
-                        return;
-                    };
-                    // and finally we sleep until the next cron execution time
-                    time::sleep_until(deadline).await;
-                    // run the backup
-                    match backup(&shared_params).await {
-                        Ok(()) => {
-                            info!("Backup succeeded");
-                        }
-                        Err(e) => {
-                            // we handle errors here to keep the loop running
-                            error!("Backup error: {e:#}");
+            let task = task::spawn({
+                let params = Arc::clone(&params);
+                async move {
+                    loop {
+                        // we checked that the schedule exists above, so we can unwrap it
+                        let Some(deadline) =
+                            params.schedule.as_ref().or_panic().upcoming(Utc).next()
+                        else {
+                            error!("Could not get next execution time for cron schedule");
+                            return;
+                        };
+                        info!("Next backup scheduled for {}", deadline.to_rfc2822());
+                        // tokio's sleep_until` expect an `Instant` and not a Utc::DateTime, let's convert.
+                        // first we get the duration between now and the deadline
+                        let Ok(wait_time) = (deadline - Utc::now()).to_std() else {
+                            error!("Could not convert duration to std Duration");
+                            return;
+                        };
+                        // then we add it to the current instant
+                        let Some(deadline) = Instant::now().checked_add(wait_time) else {
+                            error!("Could not convert deadline to tokio Instant");
+                            return;
+                        };
+                        // and finally we sleep until the next cron execution time
+                        time::sleep_until(deadline).await;
+                        // run the backup
+                        match backup(&params).await {
+                            Ok(()) => {
+                                info!("Backup succeeded");
+                            }
+                            Err(e) => {
+                                // we handle errors here to keep the loop running
+                                error!("Backup error: {e:#}");
+                            }
                         }
                     }
                 }
@@ -105,10 +103,8 @@ async fn main() -> Result<()> {
         }
         None => {
             // run backup only once, immediately
-            info!("Backuping \"{}\" once", params.folder.to_string_lossy());
-            backup(&params)
-                .await
-                .with_context(|| anyhow!("Backup error"))?;
+            info!("Backing up \"{}\" once", params.folder.to_string_lossy());
+            backup(&params).await.context("Backup error")?;
             info!("Backup succeeded");
         }
     }
