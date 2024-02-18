@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::{fs::File, path::Path};
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result};
 use flate2::write::GzEncoder;
 use flate2::Compression;
 use temp_dir::TempDir;
@@ -20,10 +20,10 @@ pub(crate) struct Archive {
 
 /// Perform a backup of the folder, uploading it to Dropbox once complete.
 pub(crate) async fn backup(params: &Params) -> Result<()> {
-    let archive = compress_folder(&params.folder).with_context(|| anyhow!("compression failed"))?;
+    let archive = compress_folder(&params.folder).context("compression failed")?;
     upload_file(archive, params)
         .await
-        .with_context(|| anyhow!("upload failed"))?;
+        .context("upload failed")?;
     Ok(())
 }
 

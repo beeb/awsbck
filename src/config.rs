@@ -22,7 +22,7 @@ struct Cli {
     #[arg(value_hint = clap::ValueHint::DirPath, env = "AWSBCK_FOLDER")]
     folder: PathBuf,
 
-    /// Specify a cron espression to run the backup on a schedule
+    /// Specify a cron expression to run the backup on a schedule
     ///
     /// If not specified, the backup will only run once
     #[arg(short, long, value_name = "EXPR", env = "AWSBCK_CRON")]
@@ -92,7 +92,7 @@ pub(crate) async fn parse_config() -> Result<Params> {
         .cron
         .map(|cron| {
             Schedule::from_str(&cron)
-                .with_context(|| anyhow!("Could not parse cron expression '{}'", cron))
+                .with_context(|| anyhow!("Could not parse cron expression '{cron}'"))
         })
         .transpose()?;
 
