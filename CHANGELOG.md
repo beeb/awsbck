@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.7] - 2024-02-18
+
+### Changed
+
+- Bump actions/upload-artifact from 3 to 4 ([#43](https://github.com/beeb/awsbck/pull/43)) - ([1b22adb](https://github.com/beeb/awsbck/commit/1b22adb2bf36484d04bc3929c78b243a0474d779))
+- Bump actions/download-artifact from 3 to 4 ([#44](https://github.com/beeb/awsbck/pull/44)) - ([7d2f1f0](https://github.com/beeb/awsbck/commit/7d2f1f0df19b1dc15634708be1aed6e4706a5cce))
+- Use official action for github app token ([#46](https://github.com/beeb/awsbck/pull/46)) - ([5caed9c](https://github.com/beeb/awsbck/commit/5caed9c91ff1ac9368ae43b5f30e8f08c9329a86))
+- Bump SebRollen/toml-action from 1.0.2 to 1.2.0 ([#47](https://github.com/beeb/awsbck/pull/47)) - ([b76600b](https://github.com/beeb/awsbck/commit/b76600b02abc832208d92d5e3a00b8c1656bcd08))
+- Bump robinraju/release-downloader from 1.8 to 1.9 ([#48](https://github.com/beeb/awsbck/pull/48)) - ([ef371ec](https://github.com/beeb/awsbck/commit/ef371ec189cf350ad0869fbd78f469b001c49716))
+- Update deps ([#49](https://github.com/beeb/awsbck/pull/49)) - ([b054f33](https://github.com/beeb/awsbck/commit/b054f33c03aa5334c9a4bf5dc0ddfcde592f77a4))
+- Code cleanup and fix typos ([#50](https://github.com/beeb/awsbck/pull/50)) - ([e5a41f4](https://github.com/beeb/awsbck/commit/e5a41f4a0ec13d254714a49e5148d7fc999f29dc))
+
+### Fixed
+
+- Fix deprecation warning ([#51](https://github.com/beeb/awsbck/pull/51)) - ([6028b2a](https://github.com/beeb/awsbck/commit/6028b2a138736850e8b007e41a5eb7873b5ed5e3))
+
 ## [0.3.6] - 2023-11-28
 
 ### Added
