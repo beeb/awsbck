@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.8] - 2024-03-22
+
+### Changed
+
+- Update deps and devShell ([#52](https://github.com/beeb/awsbck/pull/52)) - ([6efdbc0](https://github.com/beeb/awsbck/commit/6efdbc061d887420ff08af3854b9da30a098d461))
+
 ## [0.3.7] - 2024-02-18
 
 ### Changed
