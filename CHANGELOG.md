@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.9] - 2024-06-10
+
+### Changed
+
+- Bump robinraju/release-downloader from 1.9 to 1.10 ([#54](https://github.com/beeb/awsbck/pull/54)) - ([9e9624d](https://github.com/beeb/awsbck/commit/9e9624d829de2117bbf1c5d7d8bea31f31437b36))
+- Update deps ([#56](https://github.com/beeb/awsbck/pull/56)) - ([8e8255b](https://github.com/beeb/awsbck/commit/8e8255b7a0170800f384fbae51992d2452c152da))
+
 ## [0.3.8] - 2024-03-22
 
 ### Changed
