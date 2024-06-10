@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '14.2'
+          xcode-version: '14.3'
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin
