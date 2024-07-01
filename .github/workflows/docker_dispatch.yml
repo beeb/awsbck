@@ -15,7 +15,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: download binaries
-        uses: robinraju/release-downloader@v1.10
+        uses: robinraju/release-downloader@v1.11
         id: dl
         with:
           latest: true
