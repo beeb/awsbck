@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.10] - 2024-07-01
+
+### Changed
+
+- Bump docker/build-push-action from 5 to 6 ([#58](https://github.com/beeb/awsbck/pull/58)) - ([70f433e](https://github.com/beeb/awsbck/commit/70f433e87c7d0e909c2d82651cfcc1e60ed5d7dd))
+- Bump robinraju/release-downloader from 1.10 to 1.11 ([#60](https://github.com/beeb/awsbck/pull/60)) - ([e8ceaa4](https://github.com/beeb/awsbck/commit/e8ceaa41a1ca66ef1bbdef7a47b0194e7cb05303))
+
+### Fixed
+
+- Fix mac build ([#57](https://github.com/beeb/awsbck/pull/57)) - ([c04ae38](https://github.com/beeb/awsbck/commit/c04ae387b2222da68450eb5955df79ca39599091))
+
 ## [0.3.9] - 2024-06-10
 
 ### Changed
