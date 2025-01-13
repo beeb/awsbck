@@ -19,7 +19,8 @@ jobs:
         id: dl
         with:
           latest: true
-          tarBall: true
+          fileName: 'awsbck-v*-linux-*.tar.gz'
+          tarBall: false
           zipBall: false
       - name: extract binaries
         run: |
