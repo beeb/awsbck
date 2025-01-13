@@ -55,6 +55,7 @@ fn e2e_test() {
         assert!(output.status.success());
         assert!(String::from_utf8_lossy(&output.stderr).contains("Backup succeeded"));
 
+        #[allow(clippy::zombie_processes)] // gets killed later, no need to `wait()`
         // run on a cron schedule
         let mut cmd = Command::new(&path)
             .env("AWSBCK_TESTING_E2E", "1")
