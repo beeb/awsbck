@@ -21,7 +21,7 @@ jobs:
           path: target/release/awsbck.exe
 
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-13
     name: Release build for macOS
     steps:
       - uses: dtolnay/rust-toolchain@stable
@@ -37,7 +37,7 @@ jobs:
           path: target/release/awsbck
 
   build-macos-arm:
-    runs-on: macos-latest
+    runs-on: macos-13
     name: Release build for macOS aarch64
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
