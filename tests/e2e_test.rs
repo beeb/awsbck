@@ -7,10 +7,10 @@ use std::{
 };
 
 use aws_config::BehaviorVersion;
-use aws_sdk_s3::{config::Credentials, Client};
+use aws_sdk_s3::{Client, config::Credentials};
 use dockertest::{
-    waitfor::{MessageSource, MessageWait},
     DockerTest, Source, TestBodySpecification,
+    waitfor::{MessageSource, MessageWait},
 };
 use tokio::time::sleep;
 

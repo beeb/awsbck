@@ -4,20 +4,20 @@
 //! [official examples](https://github.com/awslabs/aws-sdk-rust/tree/main/examples/examples/s3)
 use std::{env, fs::File, path::Path};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use aws_config::BehaviorVersion;
 use aws_sdk_s3::{
+    Client,
     config::Credentials,
     operation::create_multipart_upload::CreateMultipartUploadOutput,
     types::{CompletedMultipartUpload, CompletedPart},
-    Client,
 };
 use aws_smithy_types::byte_stream::{ByteStream, Length};
 use log::{info, warn};
 
 use crate::{
     backup::Archive,
-    config::{sanitize_filename, Params},
+    config::{Params, sanitize_filename},
 };
 
 /// In bytes, minimum chunk size of 5MB. Increase [`CHUNK_SIZE`] to send larger chunks.
