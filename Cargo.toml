@@ -1,7 +1,7 @@
 [package]
 name = "awsbck"
 version = "0.3.10"
-edition = "2021"
+edition = "2024"
 authors = ["Valentin Bersier <hi@beeb.li>"]
 license = "MIT OR Apache-2.0"
 description = "Utility to backup a folder to AWS S3, once or periodically."
@@ -17,7 +17,7 @@ aws-sdk-s3 = "1"
 aws-smithy-types = "1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 clap = { version = "4", features = ["derive", "env"] }
-cron = "0.14"
+cron = "0.15"
 dotenvy = "0.15"
 env_logger = "0.11"
 flate2 = "1"

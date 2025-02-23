@@ -4,18 +4,20 @@
 //! [official examples](https://github.com/awslabs/aws-sdk-rust/tree/main/examples/examples/s3)
 use std::{env, fs::File, path::Path};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
+use aws_config::BehaviorVersion;
 use aws_sdk_s3::{
+    Client,
+    config::Credentials,
     operation::create_multipart_upload::CreateMultipartUploadOutput,
     types::{CompletedMultipartUpload, CompletedPart},
-    Client,
 };
 use aws_smithy_types::byte_stream::{ByteStream, Length};
 use log::{info, warn};
 
 use crate::{
     backup::Archive,
-    config::{sanitize_filename, Params},
+    config::{Params, sanitize_filename},
 };
 
 /// In bytes, minimum chunk size of 5MB. Increase [`CHUNK_SIZE`] to send larger chunks.
@@ -27,11 +29,15 @@ const MAX_CHUNKS: u64 = 10000;
 /// The `_temp_dir` is not used but needs to be kept around until the upload is complete. It going out of scope will
 /// delete the temp folder.
 pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()> {
-    // we want to use `from_env` below, so make sure that environment variables are set properly, even if data comes
-    // from the command line args
-    env::set_var("AWS_ACCESS_KEY_ID", &params.aws_key_id);
-    env::set_var("AWS_SECRET_ACCESS_KEY", &params.aws_key);
-    let mut shared_config_builder = aws_config::from_env().region(params.aws_region.region().await);
+    let mut shared_config_builder = aws_config::defaults(BehaviorVersion::latest())
+        .credentials_provider(Credentials::new(
+            &params.aws_key_id,
+            &params.aws_key,
+            None,
+            None,
+            "cli",
+        ))
+        .region(params.aws_region.region().await);
     // we set this special environment variable when doing e2e testing
     if env::var("AWSBCK_TESTING_E2E").is_ok() {
         warn!("Endpoint URL was changed to localhost while in testing environment.");

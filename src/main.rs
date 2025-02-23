@@ -29,14 +29,14 @@ mod prelude;
 async fn main() -> Result<()> {
     dotenv().ok(); // load .env file if present
 
-    // set default logging level. we ignore info logs from aws
-    if env::var("RUST_LOG").is_err() {
-        env::set_var(
-            "RUST_LOG",
-            "awsbck=info,aws_config=warn,aws_credential_types=warn,tracing=warn",
-        );
-    };
-    env_logger::init();
+    if env::var("RUST_LOG").is_ok() {
+        env_logger::init();
+    } else {
+        // set default logging level. we ignore info logs from aws
+        env_logger::Builder::new()
+            .parse_filters("awsbck=info,aws_config=warn,aws_credential_types=warn,tracing=warn")
+            .init();
+    }
 
     // parse config from env and/or cli
     let params = Arc::new(parse_config().await?);

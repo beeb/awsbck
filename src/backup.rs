@@ -2,8 +2,8 @@ use std::path::PathBuf;
 use std::{fs::File, path::Path};
 
 use anyhow::{Context, Result};
-use flate2::write::GzEncoder;
 use flate2::Compression;
+use flate2::write::GzEncoder;
 use temp_dir::TempDir;
 use uuid::Uuid;
 
