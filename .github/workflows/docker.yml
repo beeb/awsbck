@@ -27,7 +27,7 @@ jobs:
       - name: extract binaries
         run: |
           tar -xvf awsbck-x86_64-unknown-linux-musl.tar.xz && mkdir linux_amd64 && mv awsbck-x86_64-unknown-linux-musl/awsbck linux_amd64/awsbck
-          tar -xvf awsbck-aarch64-unknown-linux-gnu.tar.xz && mkdir linux_arm64 && mv awsbck-x86_64-unknown-linux-musl/awsbck linux_arm64/awsbck
+          tar -xvf awsbck-aarch64-unknown-linux-gnu.tar.xz && mkdir linux_arm64 && mv awsbck-aarch64-unknown-linux-gnu/awsbck linux_arm64/awsbck
       - name: semver
         id: semver
         run: |
