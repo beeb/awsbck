@@ -2,6 +2,8 @@ name: Docker
 
 on:
   workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   packages: write
@@ -19,14 +21,13 @@ jobs:
         id: dl
         with:
           latest: true
-          fileName: 'awsbck-v*-linux-*.tar.gz'
+          fileName: 'awsbck-*-unknown-linux-*.tar.xz'
           tarBall: false
           zipBall: false
       - name: extract binaries
         run: |
-          tar -xzvf awsbck-v*-linux-x64.tar.gz && mkdir linux_amd64 && mv awsbck linux_amd64/awsbck
-          tar -xzvf awsbck-v*-linux-aarch64.tar.gz && mkdir linux_arm64 && mv awsbck linux_arm64/awsbck
-          tar -xzvf awsbck-v*-linux-armv7.tar.gz && mkdir linux_arm && mv awsbck linux_arm/awsbck
+          tar -xzvf awsbck-x86_64-unknown-linux-musl.tar.xz && mkdir linux_amd64 && mv awsbck linux_amd64/awsbck
+          tar -xzvf awsbck-aarch64-unknown-linux-gnu.tar.xz && mkdir linux_arm64 && mv awsbck linux_arm64/awsbck
       - name: semver
         id: semver
         run: |
@@ -64,7 +65,7 @@ jobs:
           file: Dockerfile.root
           tags: ${{ steps.meta-root.outputs.tags }}
           labels: ${{ steps.meta-root.outputs.labels }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -83,4 +84,4 @@ jobs:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
