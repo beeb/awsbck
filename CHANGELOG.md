@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.12] - 2025-02-24
+
+### Changed
+
+- Cargo dist (#64) - ([abb6f9c](https://github.com/beeb/awsbck/commit/abb6f9ccfcf90529d00de9d9731972066fcfcaf9))
+
 ## [0.3.11] - 2025-02-23
 
 ### Changed
