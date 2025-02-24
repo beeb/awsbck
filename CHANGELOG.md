@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.13] - 2025-02-24
+
+### Fixed
+
+- Fix tar command - ([702c16c](https://github.com/beeb/awsbck/commit/702c16c43f4aa6f26e2e0e41696d8701d7555fc7))
+- Fix path - ([ae3244b](https://github.com/beeb/awsbck/commit/ae3244b945145404ad61e2c83606055a18e165b2))
+- Fix path - ([a43a521](https://github.com/beeb/awsbck/commit/a43a5216131f52ddc53816671f64a800381e282c))
+
 ## [0.3.12] - 2025-02-24
 
 ### Changed
