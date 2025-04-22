@@ -44,9 +44,8 @@ async fn main() -> Result<()> {
     // check if we run the backup once, or periodically forever
     if let Some(schedule) = &params.schedule {
         info!(
-            "Will backup \"{}\" on cron schedule: \"{}\"",
-            params.folder.to_string_lossy(),
-            schedule.to_string()
+            "Will backup \"{}\" on cron schedule: \"{schedule}\"",
+            params.folder.to_string_lossy()
         );
         // spawn a routine that will run the backup periodically
         let task = task::spawn({
