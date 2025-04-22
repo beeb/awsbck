@@ -22,6 +22,7 @@
       {
         devShells.default = pkgs.mkShell.override { inherit stdenv; } {
           buildInputs = [
+            pkgs.cargo-dist
             pkgs.rust-analyzer-unwrapped
             toolchain
           ];
