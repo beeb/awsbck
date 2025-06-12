@@ -1,49 +1,66 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+    fenix = {
+      url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, rust-overlay, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        overlays = [ (import rust-overlay) ];
-        pkgs = import nixpkgs {
-          inherit system overlays;
-        };
-        lib = pkgs.lib;
-        toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-        stdenv = if pkgs.stdenv.isLinux then pkgs.stdenvAdapters.useMoldLinker pkgs.stdenv else pkgs.stdenv;
-      in
-      {
-        devShells.default = pkgs.mkShell.override { inherit stdenv; } {
-          buildInputs = [
-            pkgs.cargo-dist
-            pkgs.rust-analyzer-unwrapped
-            toolchain
-          ];
-
-          RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
-        };
-
-        packages.default = pkgs.rustPlatform.buildRustPackage.override { inherit stdenv; } {
-          pname = "awsbck";
-          inherit ((lib.importTOML ./Cargo.toml).package) version;
-
-          src = lib.cleanSource ./.;
-
-          cargoLock = {
-            lockFile = ./Cargo.lock;
-            allowBuiltinFetchGit = true;
+  outputs = { self, nixpkgs, fenix }:
+    let
+      forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
+    in
+    {
+      devShells = forAllSystems (system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ fenix.overlays.default ];
           };
+          toolchain = fenix.packages.${system}.stable.withComponents [
+            "rustc"
+            "cargo"
+            "rust-std"
+            "rustfmt-preview"
+            "clippy-preview"
+            "rust-analyzer-preview"
+            "rust-src"
+          ];
+        in
+        {
+          default = pkgs.mkShell {
+            buildInputs = with pkgs; [
+              cargo-dist
+              toolchain
+            ];
 
-          buildInputs = lib.optionals pkgs.stdenv.isDarwin [ pkgs.darwin.apple_sdk.frameworks.Security ];
+            RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
+          };
+        }
+      );
+      packages = forAllSystems (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+          lib = pkgs.lib;
+        in
+        {
+          default = pkgs.rustPlatform.buildRustPackage {
+            pname = "awsbck";
+            inherit ((lib.importTOML ./Cargo.toml).package) version;
 
-          doCheck = false;
-        };
-      });
+            src = lib.cleanSource ./.;
+
+            cargoLock = {
+              lockFile = ./Cargo.lock;
+              allowBuiltinFetchGit = true;
+            };
+
+            buildInputs = lib.optionals pkgs.stdenv.isDarwin [ pkgs.darwin.apple_sdk.frameworks.Security ];
+
+            doCheck = false;
+          };
+        }
+      );
+    };
 }
