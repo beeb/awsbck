@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.13] - 2025-06-12
+
+### Changed
+
+- Update release-downloader action - ([e36d05f](https://github.com/beeb/awsbck/commit/e36d05f4a7cce794fd9e4e2c562f9ca02c77a4e5))
+- Bump actions/create-github-app-token from 1 to 2 ([#68](https://github.com/beeb/awsbck/pull/68)) - ([5d87dd3](https://github.com/beeb/awsbck/commit/5d87dd3abfe4c5f2bc5b3f018ffa360b373adb28))
+- Update runner for cargo-dist ([#69](https://github.com/beeb/awsbck/pull/69)) - ([4e49ce3](https://github.com/beeb/awsbck/commit/4e49ce349385916a881409088e449e03eaf64680))
+- Update deps ([#71](https://github.com/beeb/awsbck/pull/71)) - ([97835b6](https://github.com/beeb/awsbck/commit/97835b6494ea5f63ddc4f957e73ad4b7837fa68c))
+
+### Fixed
+
+- Fix tar command - ([702c16c](https://github.com/beeb/awsbck/commit/702c16c43f4aa6f26e2e0e41696d8701d7555fc7))
+- Fix path - ([ae3244b](https://github.com/beeb/awsbck/commit/ae3244b945145404ad61e2c83606055a18e165b2))
+- Fix path - ([a43a521](https://github.com/beeb/awsbck/commit/a43a5216131f52ddc53816671f64a800381e282c))
+- Clippy warning ([#70](https://github.com/beeb/awsbck/pull/70)) - ([d3fa3b8](https://github.com/beeb/awsbck/commit/d3fa3b8e9eb22e998600e05aaa09f86e02b1ffcd))
+
 ## [0.3.12] - 2025-02-24
 
 ### Changed
