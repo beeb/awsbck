@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.14] - 2025-06-17
+
+### Fixed
+
+- Fix runner for cargo-dist - ([f0170e1](https://github.com/beeb/awsbck/commit/f0170e1e6b70f8eef2966da32c70592b6f9c2b00))
+
 ## [0.3.13] - 2025-06-12
 
 ### Changed
