@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.15] - 2025-06-17
+
+### Changed
+
+- Update windows runner image - ([0618285](https://github.com/beeb/awsbck/commit/06182854326caa744ea2f9ad33f69da60c00b962))
+
 ## [0.3.14] - 2025-06-17
 
 ### Fixed
