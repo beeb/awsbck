@@ -552,7 +552,7 @@ dependencies = [
 
 [[package]]
 name = "awsbck"
-version = "0.3.15"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "aws-config",
