@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2025-09-09
+
+### Changed
+
+- Update checkout action ([#76](https://github.com/beeb/awsbck/pull/76)) - ([f55201f](https://github.com/beeb/awsbck/commit/f55201f41392f2dc2fa7759be6925b818f3c8d01))
+- Prepare for 1.0 release ([#78](https://github.com/beeb/awsbck/pull/78)) - ([7656799](https://github.com/beeb/awsbck/commit/76567992a0b6c73c6f8b3ffff3dd78962029467c))
+
 ## [0.3.15] - 2025-06-17
 
 ### Changed
