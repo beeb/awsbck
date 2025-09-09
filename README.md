@@ -12,17 +12,6 @@
 
 <hr/>
 
-## Disclaimer
-
-This software is in a beta stage and, although it has not caused any problems in testing, I wouldn't recommend it for
-production use.
-
-Use at your own risks!
-
-The CLI will certainly change, but any breaking change should mean an increase in the minor version number as per semver
-, until it reaches `1.0.0`. New features that are backwards-compatible and bug fixes will lead to patch number bumps
-until then.
-
 ## Usage
 
 ```
@@ -94,10 +83,11 @@ $ cargo install awsbck
 
 ### Nix
 
-Available through nixpkgs on the unstable channel.
+Available through nixpkgs on the unstable channel, some usage examples below:
 
 ```shell
 $ nix-env -iA nixpkgs.awsbck
+$ nix run nixpkgs#awsbck
 ```
 
 ### Docker
@@ -116,8 +106,6 @@ and store the resulting dump to a separate volume that we can backup to S3.
 
 ```yml
 ---
-version: '3.2'
-
 volumes:
   # the first volume is to persist the database raw data
   database:
