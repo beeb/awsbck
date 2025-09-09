@@ -18,7 +18,7 @@ pub(crate) struct Archive {
     _temp_dir: TempDir,
 }
 
-/// Perform a backup of the folder, uploading it to Dropbox once complete.
+/// Perform a backup of the folder, uploading it to S3 once complete.
 pub(crate) async fn backup(params: &Params) -> Result<()> {
     let archive = compress_folder(&params.folder).context("compression failed")?;
     upload_file(archive, params)
