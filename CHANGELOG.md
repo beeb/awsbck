@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2025-11-02
+
+### Changed
+
+- Update deps and tooling ([#81](https://github.com/beeb/awsbck/pull/81)) - ([1361551](https://github.com/beeb/awsbck/commit/13615510b9ca5d4027f73c08c4154ea704cbf88d))
+
+### Removed
+
+- Remove build for mac intel ([#83](https://github.com/beeb/awsbck/pull/83)) - ([2589d96](https://github.com/beeb/awsbck/commit/2589d962603e04cc9eb3275f9f9303cc58cc13cb))
+
+
 ## [1.0.0] - 2025-09-09
 
 ### Changed
