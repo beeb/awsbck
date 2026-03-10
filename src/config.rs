@@ -3,7 +3,7 @@ use std::{path::PathBuf, str::FromStr};
 use anyhow::{Context, Result, anyhow};
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::config::Region;
-use clap::{Parser, command};
+use clap::Parser;
 use cron::Schedule;
 use log::info;
 
