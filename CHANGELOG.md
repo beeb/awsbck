@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2026-03-10
+
+### Changed
+
+- Move to trusted publishing ([#84](https://github.com/beeb/awsbck/pull/84)) - ([ec5f0c3](https://github.com/beeb/awsbck/commit/ec5f0c330fa939b475af6ad8295f0f72acf9b91e))
+- Update deps ([#89](https://github.com/beeb/awsbck/pull/89)) - ([ea3b0a6](https://github.com/beeb/awsbck/commit/ea3b0a63d7e77e4f9361ed6c1ced41e2fe6c7a46))
+
+
 ## [1.0.1] - 2025-11-02
 
 ### Changed
