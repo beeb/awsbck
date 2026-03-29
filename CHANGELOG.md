@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] - 2026-03-29
+
+### Changed
+
+- Bump actions/create-github-app-token from 2 to 3 ([#99](https://github.com/beeb/awsbck/pull/99)) - ([8848e34](https://github.com/beeb/awsbck/commit/8848e34777f22e935bb2b20c042d49433cf3a923))
+- Bump docker/login-action from 3 to 4 ([#98](https://github.com/beeb/awsbck/pull/98)) - ([b420264](https://github.com/beeb/awsbck/commit/b4202642fa164c10444d48d0fead475d509bb9c4))
+
+
 ## [1.0.3] - 2026-03-22
 
 ### Changed
