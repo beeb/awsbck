@@ -9,7 +9,7 @@ use std::{
 use aws_config::BehaviorVersion;
 use aws_sdk_s3::{Client, config::Credentials};
 use dockertest::{
-    DockerTest, Source, TestBodySpecification,
+    DockerTest, Image, Source, TestBodySpecification,
     waitfor::{MessageSource, MessageWait},
 };
 use tokio::time::sleep;
@@ -20,15 +20,19 @@ fn e2e_test() {
     let mut test = DockerTest::new().with_default_source(Source::DockerHub);
     let mut container_env = HashMap::new();
     // add default bucket "foo"
-    container_env.insert("initialBuckets".to_string(), "foo".to_string());
-    let mut aws = TestBodySpecification::with_repository("adobe/s3mock")
-        .set_wait_for(Box::new(MessageWait {
-            // wait until container has finished initializing
-            message: "Started S3MockApplication".to_string(),
-            source: MessageSource::Stdout,
-            timeout: 10,
-        }))
-        .replace_env(container_env);
+    container_env.insert(
+        "COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS".to_string(),
+        "foo".to_string(),
+    );
+    let mut aws =
+        TestBodySpecification::with_image(Image::with_repository("adobe/s3mock").tag("5.0.0"))
+            .set_wait_for(Box::new(MessageWait {
+                // wait until container has finished initializing
+                message: "Started S3MockApplication".to_string(),
+                source: MessageSource::Stdout,
+                timeout: 10,
+            }))
+            .replace_env(container_env);
     // expose HTTP port
     aws.modify_port_map(9090, 9090);
     test.provide_container(aws);

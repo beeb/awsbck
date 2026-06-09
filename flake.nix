@@ -7,26 +7,24 @@
     };
   };
 
-  outputs = { self, nixpkgs, fenix }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      fenix,
+    }:
     let
       forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
     in
     {
-      devShells = forAllSystems (system:
+      devShells = forAllSystems (
+        system:
         let
           pkgs = import nixpkgs {
             inherit system;
             overlays = [ fenix.overlays.default ];
           };
-          toolchain = fenix.packages.${system}.stable.withComponents [
-            "rustc"
-            "cargo"
-            "rust-std"
-            "rustfmt-preview"
-            "clippy-preview"
-            "rust-analyzer-preview"
-            "rust-src"
-          ];
+          toolchain = fenix.packages.${system}.fromToolchainFile { dir = ./.; };
         in
         {
           default = pkgs.mkShell {
@@ -39,7 +37,9 @@
           };
         }
       );
-      packages = forAllSystems (system:
+
+      packages = forAllSystems (
+        system:
         let
           pkgs = import nixpkgs { inherit system; };
           lib = pkgs.lib;

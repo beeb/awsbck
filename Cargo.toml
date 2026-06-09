@@ -2,12 +2,11 @@
 name = "awsbck"
 version = "1.0.3"
 edition = "2024"
-authors = ["Valentin Bersier <hi@beeb.li>"]
-license = "MIT OR Apache-2.0"
 description = "Utility to backup a folder to AWS S3, once or periodically."
-repository = "https://github.com/beeb/awsbck"
 readme = "./README.md"
-keywords = ["aws", "s3", "backup", "aws-s3"]
+repository = "https://github.com/beeb/awsbck"
+license = "MIT OR Apache-2.0"
+keywords = ["aws", "aws-s3", "backup", "s3"]
 categories = ["command-line-utilities", "filesystem"]
 
 [dependencies]
@@ -17,22 +16,22 @@ aws-sdk-s3 = "1"
 aws-smithy-types = "1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 clap = { version = "4", features = ["derive", "env"] }
-cron = "0.15"
+cron = "0.16"
 dotenvy = "0.15"
 env_logger = "0.11"
 flate2 = "1"
 log = "0.4"
 tar = "0.4"
 temp-dir = "0.2"
-tokio = { version = "1", features = ["rt", "macros", "signal"] }
-uuid = { version = "1", features = ["v4", "fast-rng"] }
+tokio = { version = "1", features = ["macros", "rt", "signal"] }
+uuid = { version = "1", features = ["fast-rng", "v4"] }
 
 [dev-dependencies]
 dockertest = "0.5"
 
 [profile.release]
-lto = "thin"
 strip = true
+lto = "thin"
 
 # The profile that 'dist' will build with
 [profile.dist]
