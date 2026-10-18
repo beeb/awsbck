@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2026-10-18
+
+### Changed
+
+- Update dependencies ([#104](https://github.com/beeb/awsbck/pull/104)) - ([9928334](https://github.com/beeb/awsbck/commit/99283346ba722451d829b52941a6ba4023721814))
+
+
 ## [1.0.4] - 2026-06-09
 
 ### Changed
