@@ -1,6 +1,6 @@
 [package]
 name = "awsbck"
-version = "1.0.4"
+version = "1.0.5"
 edition = "2024"
 description = "Utility to backup a folder to AWS S3, once or periodically."
 readme = "./README.md"
