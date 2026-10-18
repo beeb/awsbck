@@ -138,7 +138,7 @@ pub(crate) async fn upload_file(archive: Archive, params: &Params) -> Result<()>
         .send()
         .await?;
 
-    info!("Archive uploaded as \"{}\"", &filename);
+    info!("Archive uploaded as \"{filename}\"");
     Ok(())
 }
 
